@@ -4,7 +4,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Henri\\NetcardApi\\": "src/"
+            "Netcard\\": "src/"
         }
     },
     "authors": [
