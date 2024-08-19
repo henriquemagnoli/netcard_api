@@ -1,8 +1,8 @@
 <?php
 
-namespace NetCard\Dao;
+namespace Netcard\Dao;
 
-use NetCard\Model\ResponseMessage;
+use Netcard\Model\ResponseMessage;
 
 interface UserDao
 {

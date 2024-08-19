@@ -1,6 +1,6 @@
 <?php
 
-namespace NetCard\Model;
+namespace Netcard\Model;
 
 class ResponseMessage
 {

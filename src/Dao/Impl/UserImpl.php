@@ -1,13 +1,13 @@
 <?php
 
-namespace NetCard\Dao\Impl;
+namespace Netcard\Dao\Impl;
 
 use Exception;
-use NetCard\Dao\UserDao;
-use NetCard\Model\ResponseMessage;
+use Netcard\Dao\UserDao;
+use Netcard\Model\ResponseMessage;
 use PDOException;
-use NetCard\Database\Connection;
-use NetCard\Helper\HelperUser;
+use Netcard\Database\Connection;
+use Netcard\Helper\HelperUser;
 
 class UserImpl implements UserDao
 {
@@ -71,19 +71,37 @@ class UserImpl implements UserDao
 
             $connection->beginTransaction();
 
+            $password = password_hash($json_data->password, PASSWORD_DEFAULT);
+            $streetComplement = (!isset($json_data->address->streetComplement) ? NULL : $json_data->address->streetComplement);
+
             $command = $connection->prepare(HelperUser::insertUser());
-            $command->bindParam(':name', );
+            $command->bindParam(':name', $json_data->name);
+            $command->bindParam(':password', $password);
+            $command->bindParam(':email', $json_data->email);
+            $command->bindParam(':cpf', $json_data->cpf);
+            $command->bindParam(':profilePicture', $json_data->profilePicture);
+            $command->bindParam(':sex', $json_data->sex);
+            $command->bindParam(':birthDate', $json_data->birthDate);
+            $command->bindParam(':street', $json_data->address->street);
+            $command->bindParam(':streetNumber', $json_data->address->streetNumber);
+            $command->bindParam(':cityId', $json_data->address->cityId);
+            $command->bindParam(':streetComplement', $streetComplement);
+            $command->bindParam(':district', $json_data->address->district);
+            $command->bindParam(':zipCode',$json_data->address->zipCode);
+            $command->bindParam(':jobId', $json_data->jobId);
             $command->execute();
 
             $user_id = $connection->lastInsertId();
 
             $command = $connection->prepare(HelperUser::insertLogin());
+            $command->bindParam(':user_id', $user_id);
             $command->execute();    
 
             $connection->commit();
 
             $response_message->setSuccess(true);
             $response_message->setHttpStatusCode(200);
+            $response_message->setMessages("Conta cadastrada com sucesso.");
 
             return $response_message;
         }

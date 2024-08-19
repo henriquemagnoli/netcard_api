@@ -26,19 +26,19 @@ class HelperUser
                                       :cpf,
                                       :profilePicture,
                                       :sex,
-                                      :birth_date,
+                                      :birthDate,
                                       :street,
                                       :streetNumber,
                                       :cityId,
                                       :streetComplement,
                                       :district,
                                       :zipCode,
-                                      :jobId)";
+                                      :jobId);";
     }
 
     public static function insertLogin() : string
     {
-        return "";
+        return "INSERT INTO tb_login (User_id) VALUES (:user_id);";
     }
 }
 

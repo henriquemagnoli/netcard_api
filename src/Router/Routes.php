@@ -2,11 +2,13 @@
 
 use Slim\App;
 
-use NetCard\Controller\UserController;
+use Netcard\Controller\UserController;
+use Netcard\Controller\LoginController;
 
 return function(App $app)
 {
-    $app->post('/register', UserController::class . ':addUser');
+    $app->post('user/register', UserController::class . ':addUser');
+    $app->post('/login', LoginController::class . ':login');
 }
 
 ?>
