@@ -57,6 +57,16 @@ class HelperUser
     {
         return "INSERT INTO tb_login (User_id) VALUES (:user_id);";
     }
+
+    public static function insertUserConnection() : string
+    {
+        return "INSERT INTO tb_users_connections (Master_id, User_id) VALUES (:masterId, :userId);";
+    }
+
+    public static function selectUserConnectionById() : string
+    {
+        return "SELECT ";
+    }
 }
 
 ?>

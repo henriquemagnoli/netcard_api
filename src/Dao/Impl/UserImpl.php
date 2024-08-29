@@ -272,6 +272,93 @@ class UserImpl implements UserDao
             $connection = Connection::closeConnection();
         }
     }
+
+    public function addUserConnection(object $request_body, int $user_id) : ResponseMessage
+    {
+        try
+        {
+            $response_message = new ResponseMessage();
+
+            if(!$json_data = json_decode(strval($request_body)))
+            {
+                $response_message->buildMessage(400, false, ['Corpo da requisição não é um JSON válido.'], null);
+                return $response_message;
+            }
+
+            if(!isset($json_data->connectionId))
+            {
+                $response_message->buildMessage(400, false, ['O campo de id do usuário a ser adicionado deve ser preenchido.'], null);
+                return $response_message;
+            }
+            else if(empty($json_data->connectionId))
+            {
+                $response_message->buildMessage(400, false, ['Id do usuário a ser adicionado não poder ser vazio.'], null);
+                return $response_message;
+            }
+            else if(!is_numeric($json_data->connectionId))
+            {   
+                $response_message->buildMessage(400, false, ['Id do usuário a ser adicionado deve ser numérico.'], null);
+                return $response_message;
+            }
+        
+            $connection = Connection::openConnection();
+            $connection->beginTransaction();
+
+            $command = $connection->prepare(HelperUser::insertUserConnection());
+            $command->bindParam(':masterId', $user_id);
+            $command->bindParam(':userId', $json_data->connectionId);
+            $command->execute();
+
+            $connection->commit();
+
+            $response_message->buildMessage(200, true, ['Conexão realizada com sucesso.'], null);
+            return $response_message;
+        }
+        catch(PDOException $ex)
+        {
+            throw $ex;
+        }
+        catch(Exception $ex)
+        {
+            throw $ex;
+        }
+        finally
+        {
+            $connection = Connection::closeConnection();
+        }
+    }
+
+    public function getUserConnectionById(int $user_id, int $connection_id): ResponseMessage
+    {
+        try
+        {
+            $response_message = new ResponseMessage();
+
+            $connection = Connection::openConnection();
+
+            // First querie needs to be testing if the connection id exists
+
+            // Second querie needs to be testing if the connection id belongs to the user id
+
+
+            $command = $connection->prepare();
+
+            $response_message->buildMessage(200, true, null, null);
+            return $response_message;
+        }
+        catch(PDOException $ex)
+        {
+            throw $ex;
+        }
+        catch(Exception $ex)
+        {
+            throw $ex;
+        }
+        finally
+        {
+            $connection = Connection::closeConnection();
+        }
+    }
 }
 
 ?>

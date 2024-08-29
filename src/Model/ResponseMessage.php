@@ -6,7 +6,7 @@ class ResponseMessage
 {
     private $_success;
     private $_httpStatusCode;
-    private $_messages = array();
+    private $_messages;
     private $_data;
     private $_responseData = array();
 
@@ -20,7 +20,7 @@ class ResponseMessage
     }
 
     public function setMessages($message){
-        $this->_messages[] = $message;
+        $this->_messages = $message;
     }
 
     public function setData($data){
@@ -49,7 +49,7 @@ class ResponseMessage
         return $this->_responseData;
     }
 
-    public function buildMessage(int $status_code, int $success, array $messages, ?object $data)
+    public function buildMessage(int $status_code, bool $success, ?array $messages, ?object $data)
     {   
         $this->setHttpStatusCode($status_code);
         $this->setSuccess($success);
