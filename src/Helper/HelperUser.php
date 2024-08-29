@@ -4,6 +4,7 @@ namespace NetCard\Helper;
 
 class HelperUser
 {
+    // SQL Functions
     public static function insertUser() : string
     {
         return "INSERT INTO tb_users (Name, 
@@ -34,6 +35,22 @@ class HelperUser
                                       :district,
                                       :zipCode,
                                       :jobId);";
+    }
+
+    public static function updateUser() : string
+    {
+        return "UPDATE tb_users SET Name = :name,
+                                    Profile_picture = :profilePicture,
+                                    Sex = :sex,
+                                    Street = :street,
+                                    Street_number = :streetNumber,
+                                    City_id = :cityId,
+                                    Street_complement = :streetComplement,
+                                    District = :district,
+                                    Zip_code = :zipCode,
+                                    Biography = :biography,
+                                    Job_id = :jobId
+                              WHERE Id = :userId;";
     }
 
     public static function insertLogin() : string

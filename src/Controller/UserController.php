@@ -43,6 +43,40 @@ class UserController
             return $response;
         }
     }
+
+    public function updateUser(Request $request, Response $response, array $args) : Response
+    {
+        try
+        {
+            $update_user = new UserImpl();
+
+            $response_message = $update_user->updateUser($request->getBody(),
+                                                         $args['id']);
+
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+        catch(PDOException $ex)
+        {
+            $response_message = new ResponseMessage();
+            $response_message->setSuccess(false);
+            $response_message->setHttpStatusCode(500);
+            $response_message->setMessages("Ocorreu um erro na conexão com o servidor.");
+
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+        catch(Exception $ex)
+        {
+            $response_message = new ResponseMessage();
+            $response_message->setSuccess(false);
+            $response_message->setHttpStatusCode(empty($ex->getCode()) ? 500 : $ex->getCode());
+            $response_message->setMessages(empty($ex->getMessage()) ? "Ocorreu um erro ao se cadastrar." : $ex->getMessage());
+
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+    }
 }
 
 ?>

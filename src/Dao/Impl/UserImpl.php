@@ -18,54 +18,97 @@ class UserImpl implements UserDao
             $response_message = new ResponseMessage();
 
             if(!$json_data = json_decode(strval($request_body)))
-                throw new Exception('Corpo da requisição não é um JSON válido.', 400);
+            {
+                $response_message->buildMessage(400, false, ['Corpo da requisição não é um JSON válido.'], null);
+                return $response_message;
+            }
 
             // Test body
             if(!isset($json_data->name))
-                throw new Exception('Nome deve ser preenchido.', 400);
-
+            {
+                $response_message->buildMessage(400, false, ['Nome deve ser preenchido.'], null);
+                return $response_message;
+            }
+    
             if(!isset($json_data->password))
-                throw new Exception('Senha deve ser preenchida.', 400);
+            {
+                $response_message->buildMessage(400, false, ['Senha deve ser preenchida.'], null);
+                return $response_message;
+            }
 
             if(!isset($json_data->email))
-                throw new Exception('E-mail deve ser preenchido.', 400);
+            {
+                $response_message->buildMessage(400, false, ['E-mail deve ser preenchido.'], null);
+                return $response_message;
+            }
 
             if(!isset($json_data->cpf))
-                throw new Exception('Cpf deve ser preenchido.', 400);
+            {
+                $response_message->buildMessage(400, false, ['Cpf deve ser preenchido.'], null);
+                return $response_message;
+            }
 
             if(!isset($json_data->profilePicture))
-                throw new Exception('Foto deve ser inserida.', 400);
+            {
+                $response_message->buildMessage(400, false, ['Foto deve ser inserida.'], null);
+                return $response_message;
+            }
 
             if(!isset($json_data->sex))
-                throw new Exception('Sexo ser preenchido.', 400);
+            {
+                $response_message->buildMessage(400, false, ['Sexo ser preenchido.'], null);
+                return $response_message;
+            }
 
             if(!isset($json_data->birthDate))
-                throw new Exception('Data de nascimento deve ser preenchido.', 400);
+            {
+                $response_message->buildMessage(400, false, ['Data de nascimento deve ser preenchido.'], null);
+                return $response_message;
+            }
 
             if(!isset($json_data->address))
-            {
-                throw new Exception('Endereço deve ser preenchido.', 400);
+            {   
+                $response_message->buildMessage(400, false, ['Endereço deve ser preenchido.'], null);
+                return $response_message;
             }
             else
             {
                 if(!isset($json_data->address->street))
-                    throw new Exception('Rua deve ser preenchida.', 400);
+                {
+                    $response_message->buildMessage(400, false, ['Rua deve ser preenchida.'], null);
+                    return $response_message;
+                }
 
                 if(!isset($json_data->address->streetNumber))
-                    throw new Exception('Número da residência deve ser preenchida.', 400);
+                {
+                    $response_message->buildMessage(400, false, ['Número da residência deve ser preenchida.'], null);
+                    return $response_message;
+                }
 
                 if(!isset($json_data->address->cityId))
-                    throw new Exception('Cidade deve ser preenchida.', 400);
+                {
+                    $response_message->buildMessage(400, false, ['Cidade deve ser preenchida.'], null);
+                    return $response_message;
+                }
 
                 if(!isset($json_data->address->district))
-                    throw new Exception('Bairro deve ser preenchido.', 400);
+                {
+                    $response_message->buildMessage(400, false, ['Bairro deve ser preenchido.'], null);
+                    return $response_message;
+                }
 
                 if(!isset($json_data->address->zipCode))
-                    throw new Exception('CEP deve ser preenchido.', 400);
+                {
+                    $response_message->buildMessage(400, false, ['CEP deve ser preenchido.'], null);
+                    return $response_message;
+                }
             }
             
             if(!isset($json_data->jobId))
-                throw new Exception('Profissão deve ser preenchida.', 400);
+            {
+                $response_message->buildMessage(400, false, ['Profissão deve ser preenchida.'], null);
+                return $response_message;
+            }
            
             $connection = Connection::openConnection();
 
@@ -99,10 +142,7 @@ class UserImpl implements UserDao
 
             $connection->commit();
 
-            $response_message->setSuccess(true);
-            $response_message->setHttpStatusCode(200);
-            $response_message->setMessages("Conta cadastrada com sucesso.");
-
+            $response_message->buildMessage(200, true, ['Conta cadastrada com sucesso.'], null);
             return $response_message;
         }
         catch(PDOException $ex)
@@ -112,6 +152,124 @@ class UserImpl implements UserDao
         catch(Exception $ex)
         {
             throw $ex;
+        }
+    }
+
+    public function updateUser(object $request_body, int $user_id) : ResponseMessage
+    {
+        try
+        {
+            $response_message = new ResponseMessage();
+
+            if(!$json_data = json_decode(strval($request_body)))
+            {
+                $response_message->buildMessage(400, false, ['Corpo da requisição não é um JSON válido.'], null);
+                return $response_message;
+            }
+
+            // Test if the actual user its the user using JWT
+            $connection = Connection::openConnection();
+            $connection->beginTransaction();
+            
+
+            // Then validate info`s body
+            if(!isset($json_data->name))
+            {
+                $response_message->buildMessage(400, false, ['Nome deve ser preenchido.'], null);
+                return $response_message;
+            }
+
+            if(!isset($json_data->sex))
+            {
+                $response_message->buildMessage(400, false, ['Sexo ser preenchido.'], null);
+                return $response_message;
+            }
+
+            if(!isset($json_data->address))
+            {   
+                $response_message->buildMessage(400, false, ['Endereço deve ser preenchido.'], null);
+                return $response_message;
+            }
+            else
+            {
+                if(!isset($json_data->address->street))
+                {
+                    $response_message->buildMessage(400, false, ['Rua deve ser preenchida.'], null);
+                    return $response_message;
+                }
+
+                if(!isset($json_data->address->streetNumber))
+                {
+                    $response_message->buildMessage(400, false, ['Número da residência deve ser preenchida.'], null);
+                    return $response_message;
+                }
+
+                if(!isset($json_data->address->cityId))
+                {
+                    $response_message->buildMessage(400, false, ['Cidade deve ser preenchida.'], null);
+                    return $response_message;
+                }
+
+                if(!isset($json_data->address->district))
+                {
+                    $response_message->buildMessage(400, false, ['Bairro deve ser preenchido.'], null);
+                    return $response_message;
+                }
+
+                if(!isset($json_data->address->zipCode))
+                {
+                    $response_message->buildMessage(400, false, ['CEP deve ser preenchido.'], null);
+                    return $response_message;
+                }
+            }
+            
+            if(!isset($json_data->jobId))
+            {
+                $response_message->buildMessage(400, false, ['Profissão deve ser preenchida.'], null);
+                return $response_message;
+            }
+
+            // Update User
+            $command = $connection->prepare(HelperUser::updateUser());
+            $command->bindParam(':name', $json_data->name);
+
+            $profile_picture = (isset($json_data->profilePicture) ? $json_data->profilePicture : null);
+            $command->bindParam(':profilePicture', $profile_picture);
+
+            $command->bindParam(':sex', $json_data->sex);
+            $command->bindParam(':street', $json_data->address->street);
+            $command->bindParam(':streetNumber', $json_data->address->streetNumber);
+            $command->bindParam(':cityId', $json_data->address->cityId);
+
+            $street_complement = (isset($json_data->streetComplement) ? $json_data->streetComplement : null);
+            $command->bindParam(':streetComplement', $street_complement);
+
+            $command->bindParam(':district', $json_data->address->district);
+            $command->bindParam(':zipCode', $json_data->address->zipCode);
+
+            $biography = (isset($json_data->biography) ? $json_data->biography : null);
+            $command->bindParam(':biography', $biography);
+
+            $command->bindParam(':jobId', $json_data->jobId);
+            $command->bindParam(':userId', $user_id); 
+            $command->execute();
+
+            $connection->commit();
+
+            $response_message->buildMessage(200, true, ['Alteração realizada com sucesso.'], null);
+            return $response_message;
+        }
+        catch(PDOException $ex)
+        {
+            throw $ex;
+        }
+        catch(Exception $ex)
+        {
+            throw $ex;
+        }
+        finally
+        {
+            $connection = Connection::closeConnection();
         }
     }
 }

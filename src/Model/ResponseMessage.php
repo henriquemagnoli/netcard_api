@@ -48,6 +48,14 @@ class ResponseMessage
 
         return $this->_responseData;
     }
+
+    public function buildMessage(int $status_code, int $success, array $messages, ?object $data)
+    {   
+        $this->setHttpStatusCode($status_code);
+        $this->setSuccess($success);
+        $this->setMessages($messages);
+        $this->setData($data);
+    }
 }
 
 ?>
