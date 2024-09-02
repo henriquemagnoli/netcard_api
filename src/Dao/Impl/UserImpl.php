@@ -8,6 +8,7 @@ use Netcard\Model\ResponseMessage;
 use PDOException;
 use Netcard\Database\Connection;
 use Netcard\Helper\HelperUser;
+use PDO;
 
 class UserImpl implements UserDao
 {
@@ -273,6 +274,58 @@ class UserImpl implements UserDao
         }
     }
 
+    public function getUser(int $user_id) : ResponseMessage
+    {
+        try
+        {
+            $response_message = new ResponseMessage();
+
+            $connection = Connection::openConnection();
+
+            // First query will fetch user datas 
+            $command = $connection->prepare(HelperUser::selectUser());
+            $command->bindParam(':userId', $user_id);
+            $command->execute();
+
+            if($command->rowCount() === 0)
+            {
+                $response_message->buildMessage(400, false, ['Id inserido não encontrado.'], null);
+                return $response_message;
+            }
+
+            $user_data = $command->fetch(PDO::FETCH_ASSOC);
+
+            // Second query will fetch user social medias
+            $command = $connection->prepare(HelperUser::selectUserSocialMediaById());
+            $command->bindParam(':connectionId', $user_id);
+            $command->execute();
+
+            $user_social_media = $command->fetchAll(PDO::FETCH_ASSOC);
+
+      
+
+            // $returned_data = array();
+            // $returned_data['data'] = 
+
+            $user_data['user_social_media'] = $user_social_media;
+
+            $response_message->buildMessage(200, true, null, $user_data);
+            return $response_message;
+        }
+        catch(PDOException $ex)
+        {
+            throw $ex;
+        }
+        catch(Exception $ex)
+        {
+            throw $ex;
+        }
+        finally
+        {
+            $connection = Connection::closeConnection();
+        }
+    }
+
     public function addUserConnection(object $request_body, int $user_id) : ResponseMessage
     {
         try
@@ -336,13 +389,13 @@ class UserImpl implements UserDao
 
             $connection = Connection::openConnection();
 
-            // First querie needs to be testing if the connection id exists
+            // First query needs to be testing if the connection id exists
 
-            // Second querie needs to be testing if the connection id belongs to the user id
+            // Second query needs to be testing if the connection id belongs to the user id
             
-            // Third querie needs to get the user infos
+            // Third query needs to get the user infos
 
-            // Fourth querie needs to get the user social media infos
+            // Fourth query needs to get the user social media infos
 
             $command = $connection->prepare();
 

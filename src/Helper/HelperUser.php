@@ -53,6 +53,25 @@ class HelperUser
                               WHERE Id = :userId;";
     }
 
+    public static function selectUser() : string
+    {
+        return "SELECT U.Id, 
+                       U.Name, 
+                       U.Email, 
+                       U.Profile_picture, 
+                       U.Sex, 
+                       U.Street, 
+                       U.Street_number, 
+                       U.City_id, 
+                       U.Street_complement, 
+                       U.District, 
+                       U.Biography,
+                       J.Name
+                    FROM tb_users AS U
+                    INNER JOIN tb_jobs AS J ON U.Job_id = J.Id
+                    WHERE U.Id = :userId";
+    }
+
     public static function insertLogin() : string
     {
         return "INSERT INTO tb_login (User_id) VALUES (:user_id);";

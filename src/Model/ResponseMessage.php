@@ -49,7 +49,7 @@ class ResponseMessage
         return $this->_responseData;
     }
 
-    public function buildMessage(int $status_code, bool $success, ?array $messages, ?object $data)
+    public function buildMessage(int $status_code, bool $success, ?array $messages, mixed $data)
     {   
         $this->setHttpStatusCode($status_code);
         $this->setSuccess($success);

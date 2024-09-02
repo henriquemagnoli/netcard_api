@@ -65,6 +65,33 @@ class UserController
         }
     }
 
+    public function getUser(Request $request, Response $response, array $args) : Response
+    {
+        try
+        {
+            $get_user = new UserImpl();
+
+            $response_message = $get_user->getUser($args['id']);
+
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+        catch(PDOException $ex)
+        {
+            $response_message = new ResponseMessage();
+            $response_message->buildMessage(500, false, ['Ocorreu um erro na conexão com o servidor.'], null);
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+        catch(Exception $ex)
+        {
+            $response_message = new ResponseMessage();
+            $response_message->buildMessage(500, false, ['Ocorreu um erro ao retornar seus dados: ' . $ex->getMessage()], null);
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+    }
+
     public function addUserConnection(Request $request, Response $response, array $args) : Response
     {
         try
