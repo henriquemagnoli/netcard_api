@@ -302,11 +302,6 @@ class UserImpl implements UserDao
 
             $user_social_media = $command->fetchAll(PDO::FETCH_ASSOC);
 
-      
-
-            // $returned_data = array();
-            // $returned_data['data'] = 
-
             $user_data['user_social_media'] = $user_social_media;
 
             $response_message->buildMessage(200, true, null, $user_data);
