@@ -339,7 +339,10 @@ class UserImpl implements UserDao
             // First querie needs to be testing if the connection id exists
 
             // Second querie needs to be testing if the connection id belongs to the user id
+            
+            // Third querie needs to get the user infos
 
+            // Fourth querie needs to get the user social media infos
 
             $command = $connection->prepare();
 
