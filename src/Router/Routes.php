@@ -4,6 +4,8 @@ use Slim\App;
 
 use Netcard\Controller\UserController;
 use Netcard\Controller\LoginController;
+use Netcard\Controller\StatesController;
+use Netcard\Controller\CitiesController;
 
 return function(App $app)
 {
@@ -17,6 +19,10 @@ return function(App $app)
     
     // Login Endpoints
     $app->post('/api/login', LoginController::class . ':login');
+
+    // Helpers Endpoints
+    $app->get('/api/states', StatesController::class . ':getAllStates');
+    $app->Get('/api/cities/{stateId}', CitiesController::class . ':getAllCities');
 }
 
 ?>
