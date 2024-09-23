@@ -3,7 +3,7 @@
 namespace Netcard\Dao\Impl;
 
 use Exception;
-use HelperStates;
+use Netcard\Helper\HelperStates;
 use Netcard\Dao\StatesDao;
 use Netcard\Model\ResponseMessage;
 use PDOException;

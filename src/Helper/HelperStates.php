@@ -1,5 +1,7 @@
 <?php
 
+namespace Netcard\Helper;
+
 class HelperStates
 {
     public static function selectAllStates() : string

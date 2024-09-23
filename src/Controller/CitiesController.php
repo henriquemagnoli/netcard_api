@@ -25,7 +25,7 @@ class CitiesController
         catch(PDOException $ex)
         {
             $response_message = new ResponseMessage();
-            $response_message->buildMessage(500, false, ['Ocorreu um erro na conexão com o servidor.'], null);
+            $response_message->buildMessage(500, false, ['Ocorreu um erro na conexão com o servidor.' . $ex->getMessage()], null);
             $response->getBody()->write(json_encode($response_message->send()));
             return $response;
         }
