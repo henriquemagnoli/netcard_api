@@ -58,6 +58,8 @@ class HelperUser
         return "SELECT U.Id, 
                        U.Name AS UserName, 
                        U.Email, 
+                       U.Cpf,
+                       U.Birth_date,
                        U.Profile_picture, 
                        U.Sex, 
                        U.Street, 
@@ -65,6 +67,7 @@ class HelperUser
                        U.City_id, 
                        U.Street_complement, 
                        U.District, 
+                       U.Zip_code,
                        U.Biography,
                        J.Name AS JobName
                     FROM tb_users AS U
@@ -104,7 +107,7 @@ class HelperUser
 
     public static function selectUserSocialMediaById() : string
     {
-        return "SELECT USM.Social_media_id, SM.Name, USM.Url 
+        return "SELECT USM.Id, USM.Social_media_id, SM.Name, USM.Url 
                 FROM tb_user_social_media AS USM
                 INNER JOIN tb_social_media AS SM ON USM.Social_media_id = SM.Id
                 WHERE USM.User_id = :connectionId";
