@@ -6,6 +6,7 @@ use Netcard\Controller\UserController;
 use Netcard\Controller\LoginController;
 use Netcard\Controller\StatesController;
 use Netcard\Controller\CitiesController;
+use Netcard\Controller\JobsController;
 
 return function(App $app)
 {
@@ -22,7 +23,8 @@ return function(App $app)
 
     // Helpers Endpoints
     $app->get('/api/states', StatesController::class . ':getAllStates');
-    $app->Get('/api/cities/{stateId}', CitiesController::class . ':getAllCities');
+    $app->get('/api/cities/{stateId}', CitiesController::class . ':getAllCities');
+    $app->get('/api/jobs', JobsController::class . ':getAllJobs');
 }
 
 ?>
