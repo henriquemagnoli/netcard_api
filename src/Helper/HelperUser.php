@@ -56,7 +56,7 @@ class HelperUser
     public static function selectUser() : string
     {
         return "SELECT U.Id, 
-                       U.Name, 
+                       U.Name AS UserName, 
                        U.Email, 
                        U.Profile_picture, 
                        U.Sex, 
@@ -66,7 +66,7 @@ class HelperUser
                        U.Street_complement, 
                        U.District, 
                        U.Biography,
-                       J.Name
+                       J.Name AS JobName
                     FROM tb_users AS U
                     INNER JOIN tb_jobs AS J ON U.Job_id = J.Id
                     WHERE U.Id = :userId";
