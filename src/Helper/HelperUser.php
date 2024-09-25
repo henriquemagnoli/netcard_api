@@ -115,9 +115,9 @@ class HelperUser
 
     public static function insertUserCoordinate() : string
     {
-        return "INSERT INTO tb_user_coordinates (User_id,
-                                                 Latitude,
-                                                 Longitude)
+        return "INSERT INTO tb_users_coordinates (User_id,
+                                                  Latitude,
+                                                  Longitude)
                                           VALUES (:user_id,
                                                   :latitude,
                                                   :longitude);";
