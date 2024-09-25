@@ -165,6 +165,60 @@ class UserController
             return $response;
         }
     }
+
+    public function addUserCoordinate(Request $request, Response $response, array $args) : Response
+    {
+        try
+        {
+            $add_user_coordinate = new UserImpl();
+
+            $response_message = $add_user_coordinate->addUserCoordinate($args['id'], $request->getBody());
+
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+        catch(PDOException $ex)
+        {
+            $response_message = new ResponseMessage();
+            $response_message->buildMessage(500, false, ['Ocorreu um erro na conexão com o servidor.'], null);
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+        catch(Exception $ex)
+        {
+            $response_message = new ResponseMessage();
+            $response_message->buildMessage(500, false, ['Ocorreu um erro ao listar a conexão pelo Id: ' . $ex->getMessage()], null);
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+    }
+
+    public function getAllCoordinates(Request $request, Response $response) : Response
+    {
+        try
+        {
+            $get_all_coordinates = new UserImpl();
+
+            $response_message = $get_all_coordinates->getAllCoordinates();
+
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+        catch(PDOException $ex)
+        {
+            $response_message = new ResponseMessage();
+            $response_message->buildMessage(500, false, ['Ocorreu um erro na conexão com o servidor.'], null);
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+        catch(Exception $ex)
+        {
+            $response_message = new ResponseMessage();
+            $response_message->buildMessage(500, false, ['Ocorreu um erro ao listar a conexão pelo Id: ' . $ex->getMessage()], null);
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+    }
 }
 
 ?>

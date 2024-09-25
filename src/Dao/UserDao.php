@@ -11,6 +11,8 @@ interface UserDao
     public function getUser(int $user_id) : ResponseMessage;
     public function addUserConnection(object $request_body, int $user_id) : ResponseMessage;
     public function getUserConnectionById(int $user_id, int $connection_id) : ResponseMessage;
+    public function addUserCoordinate(int $user_id, object $request_body) : ResponseMessage;
+    public function getAllCoordinates() : ResponseMessage;
 }
 
 ?>

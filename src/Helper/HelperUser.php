@@ -112,6 +112,21 @@ class HelperUser
                 INNER JOIN tb_social_media AS SM ON USM.Social_media_id = SM.Id
                 WHERE USM.User_id = :connectionId";
     }
+
+    public static function insertUserCoordinate() : string
+    {
+        return "INSERT INTO tb_user_coordinates (User_id,
+                                                 Latitude,
+                                                 Longitude)
+                                          VALUES (:user_id,
+                                                  :latitude,
+                                                  :longitude);";
+    }
+
+    public static function selectUserCoordinates() : string
+    {
+        return "SELECT Id, User_id, Latitude, Longitude FROM tb_users_coordinates;";
+    }
 }
 
 ?>

@@ -410,6 +410,88 @@ class UserImpl implements UserDao
             $connection = Connection::closeConnection();
         }
     }
+
+    public function addUserCoordinate(int $user_id, object $request_body): ResponseMessage
+    {
+        try
+        {
+            $response_message = new ResponseMessage();
+
+            if(!$json_data = json_decode(strval($request_body)))
+            {
+                $response_message->buildMessage(400, false, ['Corpo da requisição não é um JSON válido.'], null);
+                return $response_message;
+            }
+
+            if(!isset($json_data->latitude))
+            {
+                $response_message->buildMessage(400, false, ['Latitude não pode ser vazia.'], null);
+                return $response_message;
+            }
+
+            if(!isset($json_data->longitude))
+            {
+                $response_message->buildMessage(400, false, ['Longitude não pode ser vazia.'], null);
+                return $response_message;
+            }
+
+            $connection = Connection::openConnection();
+            $connection->beginTransaction();
+
+            $command = $connection->prepare(HelperUser::insertUserCoordinate());
+            $command->bindParam(':user_id', $user_id);
+            $command->bindParam(':latitude', $json_data->latitude);
+            $command->bindParam(':longitude', $json_data->longitude);
+            $command->execute();
+
+            $connection->commit();
+
+            $response_message->buildMessage(200, true, ['Suas coordenadas foram adicionadas.'], null);
+            return $response_message;
+        }
+        catch(PDOException $ex)
+        {
+            throw $ex;
+        }
+        catch(Exception $ex)
+        {
+            throw $ex;
+        }
+        finally
+        {
+            $connection = Connection::closeConnection();
+        }
+    }
+
+    public function getAllCoordinates(): ResponseMessage
+    {
+        try
+        {
+            $response_message = new ResponseMessage();
+
+            $connection = Connection::openConnection();
+            
+            $command = $connection->prepare(HelperUser::selectUserCoordinates());
+            $command->execute();
+
+            $data = $command->fetchAll(PDO::FETCH_ASSOC);
+
+            $response_message->buildMessage(200, true, null, $data);
+            return $response_message;
+        }
+        catch(PDOException $ex)
+        {
+            throw $ex;
+        }
+        catch(Exception $ex)
+        {
+            throw $ex;
+        }
+        finally
+        {
+            $connection = Connection::closeConnection();
+        }
+    }
 }
 
 ?>
