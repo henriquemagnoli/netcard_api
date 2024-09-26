@@ -476,7 +476,15 @@ class UserImpl implements UserDao
 
             $data = $command->fetchAll(PDO::FETCH_ASSOC);
 
-            $response_message->buildMessage(200, true, null, $data);
+            $returned_data = array();
+
+            foreach ($data as $key => $value) {
+                $returned_data[$key]['Id'] = $value['Id'];
+                $returned_data[$key]['User_id'] = $value['User_id'];
+                $returned_data[$key]['Coordinates'] = array('lat' => floatval($value['Latitude']), 'lng' => floatval($value['Longitude']));
+            }
+
+            $response_message->buildMessage(200, true, null, $returned_data);
             return $response_message;
         }
         catch(PDOException $ex)
