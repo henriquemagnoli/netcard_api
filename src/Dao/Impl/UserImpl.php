@@ -481,6 +481,9 @@ class UserImpl implements UserDao
             foreach ($data as $key => $value) {
                 $returned_data[$key]['Id'] = $value['Id'];
                 $returned_data[$key]['User_id'] = $value['User_id'];
+                $returned_data[$key]['User_name'] = $value['User_name'];
+                $returned_data[$key]['Birth_date'] = $value['Birth_date'];
+                $returned_data[$key]['Job_name'] = $value['Job_name'];
                 $returned_data[$key]['Coordinates'] = array('lat' => floatval($value['Latitude']), 'lng' => floatval($value['Longitude']));
             }
 
