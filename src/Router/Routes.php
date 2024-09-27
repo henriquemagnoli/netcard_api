@@ -19,6 +19,7 @@ return function(App $app)
     $app->get('/api/user/{id}/connections', UserController::class . 'getAllUserConnections');
     $app->get('/api/user/{id}/connection/{connectionId}', UserController::class . 'getUserConnectionById');
     $app->post('/api/user/{id}/coordinate', UserController::class . ':addUserCoordinate');
+    $app->delete('/api/user/{id}/coordinate', UserController::class . ':deleteCoordinate');
     
     // Login Endpoints
     $app->post('/api/login', LoginController::class . ':login');
