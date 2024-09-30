@@ -7,6 +7,7 @@ use Netcard\Controller\LoginController;
 use Netcard\Controller\StatesController;
 use Netcard\Controller\CitiesController;
 use Netcard\Controller\JobsController;
+use Netcard\Controller\SocialMediasController;
 
 return function(App $app)
 {
@@ -21,6 +22,7 @@ return function(App $app)
     $app->post('/api/user/{id}/coordinate', UserController::class . ':addUserCoordinate');
     $app->delete('/api/user/{id}/coordinate', UserController::class . ':deleteCoordinate');
     
+    
     // Login Endpoints
     $app->post('/api/login', LoginController::class . ':login');
 
@@ -28,6 +30,7 @@ return function(App $app)
     $app->get('/api/states', StatesController::class . ':getAllStates');
     $app->get('/api/cities/{stateId}', CitiesController::class . ':getAllCities');
     $app->get('/api/jobs', JobsController::class . ':getAllJobs');
+    $app->get('/api/socialmedias', SocialMediasController::class . 'getAllSocialMedias');
 }
 
 ?>
