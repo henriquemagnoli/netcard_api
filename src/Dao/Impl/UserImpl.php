@@ -376,6 +376,42 @@ class UserImpl implements UserDao
         }
     }
 
+    public function getAllUserConnections(int $user_id): ResponseMessage
+    {
+        try
+        {
+            $response_message = new ResponseMessage();
+
+            $connection = Connection::openConnection();
+            $command = $connection->prepare(HelperUser::selectAllUserConnections());
+            $command->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+            $command->execute();
+
+            if($command->rowCount() === 0)
+            {
+                $response_message->buildMessage(400, false, ['Id inserido não encontrado.'], null);
+                return $response_message;
+            }
+
+            $data = $command->fetchAll(PDO::FETCH_ASSOC);
+
+            $response_message->buildMessage(200, true, null, $data);
+            return $response_message;
+        }
+        catch(PDOException $ex)
+        {
+            throw $ex;
+        }
+        catch(Exception $ex)
+        {
+            throw $ex;
+        }
+        finally
+        {
+            $connection = Connection::closeConnection();
+        }
+    }
+
     public function getUserConnectionById(int $user_id, int $connection_id): ResponseMessage
     {
         try
@@ -392,7 +428,7 @@ class UserImpl implements UserDao
 
             // Fourth query needs to get the user social media infos
 
-            $command = $connection->prepare();
+            //$command = $connection->prepare();
 
             $response_message->buildMessage(200, true, null, null);
             return $response_message;

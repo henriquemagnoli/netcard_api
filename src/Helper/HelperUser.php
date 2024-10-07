@@ -64,20 +64,51 @@ class HelperUser
                        U.Sex, 
                        U.Street, 
                        U.Street_number, 
+                       S.Id AS StateId,
                        U.City_id, 
                        U.Street_complement, 
                        U.District, 
                        U.Zip_code,
                        U.Biography,
-                       J.Name AS JobName
+                       J.Name AS JobName,
+                       J.Id AS JobId
                     FROM tb_users AS U
                     INNER JOIN tb_jobs AS J ON U.Job_id = J.Id
+                    INNER JOIN tb_cities AS C ON U.City_id = C.Id
+                    INNER JOIN tb_states AS S ON C.State_id = S.Id
                     WHERE U.Id = :userId";
     }
 
     public static function insertLogin() : string
     {
         return "INSERT INTO tb_login (User_id) VALUES (:user_id);";
+    }
+
+    public static function selectAllUserConnections() : string
+    {
+        return "SELECT U.Id, 
+                       U.Name AS UserName, 
+                       U.Email, 
+                       U.Cpf,
+                       U.Birth_date,
+                       U.Profile_picture, 
+                       U.Sex, 
+                       U.Street, 
+                       U.Street_number, 
+                       S.Id AS StateId,
+                       U.City_id, 
+                       U.Street_complement, 
+                       U.District, 
+                       U.Zip_code,
+                       U.Biography,
+                       J.Name AS JobName,
+                       J.Id AS JobId
+                    FROM tb_users_connections AS UC 
+                    INNER JOIN tb_users AS U ON UC.Connection_id = U.Id
+                    INNER JOIN tb_jobs AS J ON U.Job_id = J.Id
+                    INNER JOIN tb_cities AS C ON U.City_id = C.Id
+                    INNER JOIN tb_states AS S ON C.State_id = S.Id
+                    WHERE UC.Master_id = :user_id";
     }
 
     public static function insertUserConnection() : string
