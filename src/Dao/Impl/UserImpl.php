@@ -376,14 +376,17 @@ class UserImpl implements UserDao
         }
     }
 
-    public function getAllUserConnections(int $user_id): ResponseMessage
+    public function getAllUserConnections(int $user_id, array $query_params): ResponseMessage
     {
         try
         {
             $response_message = new ResponseMessage();
 
             $connection = Connection::openConnection();
-            $command = $connection->prepare(HelperUser::selectAllUserConnections());
+
+            $sql_params = HelperUser::createSqlUserParams($query_params);
+
+            $command = $connection->prepare(HelperUser::selectAllUserConnections() . $sql_params);
             $command->bindParam(':user_id', $user_id, PDO::PARAM_INT);
             $command->execute();
 

@@ -4,6 +4,29 @@ namespace NetCard\Helper;
 
 class HelperUser
 {
+    // Helper functions
+    public static function createSqlUserParams(array $query_params) : string
+    {
+        $sql_params = "";
+
+        if(array_key_exists('name', $query_params))
+            $sql_params = " AND (U.Name = " . $query_params['name'] . ")";
+
+        if(array_key_exists('job', $query_params))
+            $sql_params = " AND (U.Job_id = " . $query_params['job'] . ")";
+
+        if(array_key_exists('sex', $query_params))
+            $sql_params = " AND (U.Sex = " . $query_params['sex'] . ")";
+
+        if(array_key_exists('state', $query_params))
+            $sql_params = " AND (C.State_id = " . $query_params['state'] . ")";
+
+        if(array_key_exists('city', $query_params))
+            $sql_params = " AND (U.City_id = " . $query_params['city'] . ")";
+
+        return $sql_params;
+    }
+
     // SQL Functions
     public static function insertUser() : string
     {
@@ -88,21 +111,9 @@ class HelperUser
     {
         return "SELECT U.Id, 
                        U.Name AS UserName, 
-                       U.Email, 
-                       U.Cpf,
                        U.Birth_date,
                        U.Profile_picture, 
-                       U.Sex, 
-                       U.Street, 
-                       U.Street_number, 
-                       S.Id AS StateId,
-                       U.City_id, 
-                       U.Street_complement, 
-                       U.District, 
-                       U.Zip_code,
-                       U.Biography,
-                       J.Name AS JobName,
-                       J.Id AS JobId
+                       J.Name AS JobName
                     FROM tb_users_connections AS UC 
                     INNER JOIN tb_users AS U ON UC.Connection_id = U.Id
                     INNER JOIN tb_jobs AS J ON U.Job_id = J.Id

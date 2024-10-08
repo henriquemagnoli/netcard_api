@@ -125,7 +125,7 @@ class UserController
         {
             $get_all_user_connections = new UserImpl();
 
-            $response_message = $get_all_user_connections->getAllUserConnections($args['id']);
+            $response_message = $get_all_user_connections->getAllUserConnections($args['id'], $request->getQueryParams());
 
             $response->getBody()->write(json_encode($response_message->send()));    
             return $response;
