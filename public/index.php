@@ -19,12 +19,20 @@ $dotenv->load();
 
 $app = AppFactory::create();
 
+$custom_error_handler = function (Request $request, Throwable $exception) use ($app){
+
+    $payload = ['statusCode' => $exception->getCode(),
+                'success' => false,
+                'messages' => [$exception->getMessage()]];
+
+    $response = $app->getResponseFactory()->createResponse();
+    $response->getBody()->write(json_encode($payload, JSON_UNESCAPED_UNICODE));
+    return $response;
+};
+
 // Add error middlewares and handlers
 $error_middleware = $app->addErrorMiddleware(true, true, true);
-
-$error_handler = $error_middleware->getDefaultErrorHandler();
-
-$error_handler->forceContentType('application/json;charset=utf-8');
+$error_middleware->setDefaultErrorHandler($custom_error_handler);
 
 // Add middleware to set the content type
 $app->add(function(Request $request, RequestHandler $handler){
