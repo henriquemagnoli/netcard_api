@@ -38,6 +38,33 @@ class UserController
         }
     }
 
+    public function getAllCoordinates(Request $request, Response $response) : Response
+    {
+        try
+        {
+            $get_all_coordinates = new UserImpl();
+
+            $response_message = $get_all_coordinates->getAllCoordinates();
+
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+        catch(PDOException $ex)
+        {
+            $response_message = new ResponseMessage();
+            $response_message->buildMessage(500, false, ['Ocorreu um erro na conexão com o servidor.'], null);
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+        catch(Exception $ex)
+        {
+            $response_message = new ResponseMessage();
+            $response_message->buildMessage(500, false, ['Ocorreu um erro ao listar a conexão pelo Id: ' . $ex->getMessage()], null);
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+    }
+
     public function updateUser(Request $request, Response $response, array $args) : Response
     {
         try
@@ -198,28 +225,53 @@ class UserController
         }
     }
 
-    public function getAllCoordinates(Request $request, Response $response) : Response
+    public function deleteUserCoordinate(Request $request, Response $response, array $args) : Response
     {
         try
         {
-            $get_all_coordinates = new UserImpl();
+            $delete_user_coordinate = new UserImpl();
 
-            $response_message = $get_all_coordinates->getAllCoordinates();
-
+            $response_message = $delete_user_coordinate->deleteUserCoordinate($args['id']);
             $response->getBody()->write(json_encode($response_message->send()));
             return $response;
         }
         catch(PDOException $ex)
         {
             $response_message = new ResponseMessage();
-            $response_message->buildMessage(500, false, ['Ocorreu um erro na conexão com o servidor.'], null);
+            $response_message->buildMessage(500, false, ['Ocorreu um erro na conexão com o servidor.' . $ex->getMessage()], null);
             $response->getBody()->write(json_encode($response_message->send()));
             return $response;
         }
         catch(Exception $ex)
         {
             $response_message = new ResponseMessage();
-            $response_message->buildMessage(500, false, ['Ocorreu um erro ao listar a conexão pelo Id: ' . $ex->getMessage()], null);
+            $response_message->buildMessage(500, false, ['Ocorreu um erro excluir a coordenada: ' . $ex->getMessage()], null);
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+    }
+
+    public function updateUserCoordinate(Request $request, Response $response, array $args) : Response
+    {
+        try
+        {
+            $update_user_coordinate = new UserImpl();
+
+            $response_message = $update_user_coordinate->updateUserCoordinate($args['id'], $request->getBody());
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+        catch(PDOException $ex)
+        {
+            $response_message = new ResponseMessage();
+            $response_message->buildMessage(500, false, ['Ocorreu um erro na conexão com o servidor.' . $ex->getMessage()], null);
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+        catch(Exception $ex)
+        {
+            $response_message = new ResponseMessage();
+            $response_message->buildMessage(500, false, ['Ocorreu um erro alterar a coordenada: ' . $ex->getMessage()], null);
             $response->getBody()->write(json_encode($response_message->send()));
             return $response;
         }

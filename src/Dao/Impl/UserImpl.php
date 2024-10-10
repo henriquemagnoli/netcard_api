@@ -156,6 +156,47 @@ class UserImpl implements UserDao
         }
     }
 
+    public function getAllCoordinates(): ResponseMessage
+    {
+        try
+        {
+            $response_message = new ResponseMessage();
+
+            $connection = Connection::openConnection();
+            
+            $command = $connection->prepare(HelperUser::selectUserCoordinates());
+            $command->execute();
+
+            $data = $command->fetchAll(PDO::FETCH_ASSOC);
+
+            $returned_data = array();
+
+            foreach ($data as $key => $value) {
+                $returned_data[$key]['Id'] = $value['Id'];
+                $returned_data[$key]['User_id'] = $value['User_id'];
+                $returned_data[$key]['User_name'] = $value['User_name'];
+                $returned_data[$key]['Birth_date'] = $value['Birth_date'];
+                $returned_data[$key]['Job_name'] = $value['Job_name'];
+                $returned_data[$key]['Coordinates'] = array('lat' => floatval($value['Latitude']), 'lng' => floatval($value['Longitude']));
+            }
+
+            $response_message->buildMessage(200, true, null, $returned_data);
+            return $response_message;
+        }
+        catch(PDOException $ex)
+        {
+            throw $ex;
+        }
+        catch(Exception $ex)
+        {
+            throw $ex;
+        }
+        finally
+        {
+            $connection = Connection::closeConnection();
+        }
+    }
+
     public function updateUser(object $request_body, int $user_id) : ResponseMessage
     {
         try
@@ -502,31 +543,22 @@ class UserImpl implements UserDao
         }
     }
 
-    public function getAllCoordinates(): ResponseMessage
+    public function deleteUserCoordinate(int $user_id): ResponseMessage
     {
         try
         {
             $response_message = new ResponseMessage();
 
             $connection = Connection::openConnection();
-            
-            $command = $connection->prepare(HelperUser::selectUserCoordinates());
+            $connection->beginTransaction();
+
+            $command = $connection->prepare(HelperUser::deleteUserCoordinate());
+            $command->bindParam(':userId', $user_id, PDO::PARAM_INT);
             $command->execute();
 
-            $data = $command->fetchAll(PDO::FETCH_ASSOC);
+            $connection->commit();
 
-            $returned_data = array();
-
-            foreach ($data as $key => $value) {
-                $returned_data[$key]['Id'] = $value['Id'];
-                $returned_data[$key]['User_id'] = $value['User_id'];
-                $returned_data[$key]['User_name'] = $value['User_name'];
-                $returned_data[$key]['Birth_date'] = $value['Birth_date'];
-                $returned_data[$key]['Job_name'] = $value['Job_name'];
-                $returned_data[$key]['Coordinates'] = array('lat' => floatval($value['Latitude']), 'lng' => floatval($value['Longitude']));
-            }
-
-            $response_message->buildMessage(200, true, null, $returned_data);
+            $response_message->buildMessage(200, true, ['Coordenadas do usuário foram exclídas.'], null);
             return $response_message;
         }
         catch(PDOException $ex)
@@ -542,6 +574,59 @@ class UserImpl implements UserDao
             $connection = Connection::closeConnection();
         }
     }
+
+    public function updateUserCoordinate(int $user_id, object $request_body): ResponseMessage
+    {
+        try
+        {       
+            $response_message = new ResponseMessage();
+
+            if(!$json_data = json_decode(strval($request_body)))
+            {
+                $response_message->buildMessage(400, false, ['Corpo da requisição não é um JSON válido.'], null);
+                return $response_message;
+            }
+
+            if(!isset($json_data->latitude))
+            {
+                $response_message->buildMessage(400, false, ['Latitude não pode ser vazia.'], null);
+                return $response_message;
+            }
+
+            if(!isset($json_data->longitude))
+            {
+                $response_message->buildMessage(400, false, ['Longitude não pode ser vazia.'], null);
+                return $response_message;
+            }
+
+            $connection = Connection::openConnection();
+            $connection->beginTransaction();
+            
+            $command = $connection->prepare(HelperUser::updateUserCoordinate());
+            $command->bindParam(':latitude', $json_data->latitude);
+            $command->bindParam(':longitude', $json_data->longitude);
+            $command->bindParam(':userId', $user_id, PDO::PARAM_INT);
+            $connection->execute();
+
+            $connection->commit();
+
+            $response_message->buildMessage(200, true, ['Coordenadas foram alteradas.'], null);
+            return $response_message;
+        }
+        catch(PDOException $ex)
+        {
+            throw $ex;
+        }
+        catch(Exception $ex)
+        {
+            throw $ex;
+        }
+        finally
+        {
+            $connection = Connection::closeConnection();
+        }
+    }
+
 }
 
 ?>

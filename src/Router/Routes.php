@@ -20,8 +20,8 @@ return function(App $app)
     $app->get('/api/user/{id}/connections', UserController::class . ':getAllUserConnections'); // Get all user connections
     $app->get('/api/user/{id}/connection/{connectionId}', UserController::class . ':getUserConnectionById'); // Get user connection by Id
     $app->post('/api/user/{id}/coordinate', UserController::class . ':addUserCoordinate'); // Add new coordinate from user
-    $app->delete('/api/user/{id}/coordinate', UserController::class . ':deleteCoordinate'); // Delete coordinate from user
-    
+    $app->delete('/api/user/{id}/coordinate', UserController::class . ':deleteUserCoordinate'); // Delete coordinate from user
+    $app->patch('/api/user/{id}/coordinate', UserController::class . ':updateUserCoordinate'); // Update coordinate from user
     
     // Login Endpoints
     $app->post('/api/login', LoginController::class . ':login');
