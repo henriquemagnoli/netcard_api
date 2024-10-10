@@ -4,7 +4,7 @@ namespace Netcard\Dao\Impl;
 
 use Exception;
 use Netcard\Dao\SocialMediasDao;
-use NetCard\Database\Connection;
+use Netcard\Database\Connection;
 use Netcard\Helper\HelperSocialMedias;
 use Netcard\Model\ResponseMessage;
 use PDOException;

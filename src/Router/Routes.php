@@ -30,7 +30,7 @@ return function(App $app)
     $app->get('/api/states', StatesController::class . ':getAllStates');
     $app->get('/api/cities/{stateId}', CitiesController::class . ':getAllCities');
     $app->get('/api/jobs', JobsController::class . ':getAllJobs');
-    $app->get('/api/socialmedias', SocialMediasController::class . 'getAllSocialMedias');
+    $app->get('/api/socialmedias', SocialMediasController::class . ':getAllSocialMedias');
 }
 
 ?>
