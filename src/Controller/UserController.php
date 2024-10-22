@@ -11,33 +11,6 @@ use Netcard\Dao\Impl\UserImpl;
 
 class UserController
 {
-    public function addUser(Request $request, Response $response) : Response
-    {
-        try
-        {
-            $add_user = new UserImpl();
-
-            $response_message = $add_user->addUser($request->getBody());
-
-            $response->getBody()->write(json_encode($response_message->send()));    
-            return $response;
-        }
-        catch(PDOException $ex)
-        {
-            $response_message = new ResponseMessage();
-            $response_message->buildMessage(500, false, ['Ocorreu um erro na conexão com o servidor.'], null);
-            $response->getBody()->write(json_encode($response_message->send()));
-            return $response;
-        }
-        catch(Exception $ex)
-        {
-            $response_message = new ResponseMessage();
-            $response_message->buildMessage(500, false, ['Ocorreu um erro ao se cadastrar: ' . $ex->getMessage()], null);
-            $response->getBody()->write(json_encode($response_message->send()));
-            return $response;
-        }
-    }
-
     public function getAllCoordinates(Request $request, Response $response) : Response
     {
         try

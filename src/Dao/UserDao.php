@@ -6,7 +6,6 @@ use Netcard\Model\ResponseMessage;
 
 interface UserDao
 {
-    public function addUser(object $request_body) : ResponseMessage;
     public function getAllCoordinates() : ResponseMessage;
     public function updateUser(object $request_body, int $user_id) : ResponseMessage;
     public function getUser(int $user_id) : ResponseMessage;

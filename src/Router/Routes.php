@@ -3,7 +3,6 @@
 use Slim\App;
 
 use Netcard\Controller\UserController;
-use Netcard\Controller\LoginController;
 use Netcard\Controller\StatesController;
 use Netcard\Controller\CitiesController;
 use Netcard\Controller\JobsController;
@@ -12,7 +11,6 @@ use Netcard\Controller\SocialMediasController;
 return function(App $app)
 {
     // User Endpoints
-    $app->post('/api/user', UserController::class . ':addUser'); // Register new user
     $app->patch('/api/user/{id}', UserController::class . ':updateUser'); // Update User
     $app->get('/api/user/coordinates', UserController::class . ':getAllCoordinates'); // Get all coordinates from DB
     $app->get('/api/user/{id}', UserController::class . ':getUser'); // Get User by Id
@@ -22,9 +20,6 @@ return function(App $app)
     $app->post('/api/user/{id}/coordinate', UserController::class . ':addUserCoordinate'); // Add new coordinate from user
     $app->delete('/api/user/{id}/coordinate', UserController::class . ':deleteUserCoordinate'); // Delete coordinate from user
     $app->patch('/api/user/{id}/coordinate', UserController::class . ':updateUserCoordinate'); // Update coordinate from user
-    
-    // Login Endpoints
-    $app->post('/api/login', LoginController::class . ':login');
 
     // Helpers Endpoints
     $app->get('/api/states', StatesController::class . ':getAllStates');
