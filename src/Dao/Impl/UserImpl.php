@@ -462,7 +462,7 @@ class UserImpl implements UserDao
             $command->bindParam(':latitude', $json_data->latitude);
             $command->bindParam(':longitude', $json_data->longitude);
             $command->bindParam(':userId', $user_id, PDO::PARAM_INT);
-            $connection->execute();
+            $command->execute();
 
             $connection->commit();
 
