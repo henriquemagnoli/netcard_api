@@ -283,8 +283,6 @@ class UserImpl implements UserDao
 
             $sql_params = HelperUser::createSqlUserParams($query_params);
 
-            var_dump(HelperUser::selectAllUserConnections() . $sql_params);
-
             $command = $connection->prepare(HelperUser::selectAllUserConnections() . $sql_params);
             $command->bindParam(':user_id', $user_id, PDO::PARAM_INT);
             $command->execute();
