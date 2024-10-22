@@ -10,7 +10,7 @@ class HelperUser
         $sql_params = "";
 
         if(array_key_exists('name', $query_params))
-            $sql_params = " AND (U.Name = " . $query_params['name'] . ")";
+            $sql_params = " AND (U.Name = '" . $query_params['name'] . "')";
 
         if(array_key_exists('job', $query_params))
             $sql_params = " AND (U.Job_id = " . $query_params['job'] . ")";
