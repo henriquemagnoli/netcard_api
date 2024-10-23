@@ -180,6 +180,11 @@ class HelperUser
     {
         return "UPDATE tb_users_coordinates SET Latitude = :latitude, Longitude = :longitude WHERE User_id = :userId;";
     }
+
+    public static function deleteUserConnection() : string
+    {
+        return "DELETE FROM tb_users_connections WHERE Master_id = :userId AND Connection_id = :connectionId;";
+    }
 }
 
 ?>

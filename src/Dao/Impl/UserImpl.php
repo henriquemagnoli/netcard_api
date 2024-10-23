@@ -483,6 +483,64 @@ class UserImpl implements UserDao
         }
     }
 
+    public function deleteUserConnection(int $user_id, int $connection_id): ResponseMessage
+    {
+        try
+        {
+            $response_message = new ResponseMessage();
+
+            $connection = Connection::openConnection();
+            $connection->beginTransaction();
+
+            $command = $connection->prepare(HelperUser::deleteUserConnection());
+            $command->bindParam(':userId', $user_id, PDO::PARAM_INT);
+            $command->bindParam(':connectionId', $connection_id, PDO::PARAM_INT);
+            $command->execute();
+
+            $connection->commit();
+
+            $response_message->buildMessage(200, true, ['Conexão rompida com sucesso.'], null);
+            return $response_message;
+        }
+        catch(PDOException $ex)
+        {
+            throw $ex;
+        }
+        catch(Exception $ex)
+        {
+            throw $ex;
+        }
+        finally
+        {
+            $connection = Connection::closeConnection();
+        }
+    }
+
+    public function setUserVisible(int $user_id, object $request_body): ResponseMessage
+    {
+        try
+        {
+            $response_message = new ResponseMessage();
+
+            $json_data =  json_decode(strval($request_body));
+
+            
+
+            return $response_message;
+        }
+        catch(PDOException $ex)
+        {
+            throw $ex;
+        }
+        catch(Exception $ex)
+        {
+            throw $ex;
+        }
+        finally
+        {
+            $connection = Connection::closeConnection();
+        }
+    }
 }
 
 ?>

@@ -249,6 +249,33 @@ class UserController
             return $response;
         }
     }
+
+    public function deleteUserConnection(Request $request, Response $response, array $args) : Response
+    {
+        try
+        {
+            $delete_user_connection = new UserImpl();
+
+            $response_message = $delete_user_connection->deleteUserConnection($args['id'], $args['connectionId']);
+
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+        catch(PDOException $ex)
+        {
+            $response_message = new ResponseMessage();
+            $response_message->buildMessage(500, false, ['Ocorreu um erro na conexão com o servidor.'], null);
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+        catch(Exception $ex)
+        {
+            $response_message = new ResponseMessage();
+            $response_message->buildMessage(500, false, ['Ocorreu um erro ao listar a conexão pelo Id: ' . $ex->getMessage()], null);
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+    }
 }
 
 ?>

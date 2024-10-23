@@ -17,9 +17,11 @@ return function(App $app)
     $app->post('/api/user/{id}/connection', UserController::class . ':addUserConnection'); // Add new connection to user
     $app->get('/api/user/{id}/connections', UserController::class . ':getAllUserConnections'); // Get all user connections
     $app->get('/api/user/{id}/connection/{connectionId}', UserController::class . ':getUserConnectionById'); // Get user connection by Id
+    $app->delete('/api/user/{id}/connection/{connectionId}', UserController::class . ':deleteUserConnection'); // Delete connection between users
     $app->post('/api/user/{id}/coordinate', UserController::class . ':addUserCoordinate'); // Add new coordinate from user
     $app->delete('/api/user/{id}/coordinate', UserController::class . ':deleteUserCoordinate'); // Delete coordinate from user
     $app->patch('/api/user/{id}/coordinate', UserController::class . ':updateUserCoordinate'); // Update coordinate from user
+    $app->post('/api/user/{id}/visible', UserController::class . ':setUserVisible'); // Set user visible
 
     // Helpers Endpoints
     $app->get('/api/states', StatesController::class . ':getAllStates');
