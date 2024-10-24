@@ -7,36 +7,43 @@ use Netcard\Dao\UserDao;
 use Netcard\Model\ResponseMessage;
 use PDOException;
 use Netcard\Database\Connection;
+use Netcard\Helper\Helper;
 use Netcard\Helper\HelperUser;
 use PDO;
 
 class UserImpl implements UserDao
 {
-    public function getAllCoordinates(): ResponseMessage
+    public function getUser(int $user_id) : ResponseMessage
     {
         try
         {
             $response_message = new ResponseMessage();
 
             $connection = Connection::openConnection();
-            
-            $command = $connection->prepare(HelperUser::selectUserCoordinates());
+
+            // First query will fetch user datas 
+            $command = $connection->prepare(HelperUser::selectUser());
+            $command->bindParam(':userId', $user_id);
             $command->execute();
 
-            $data = $command->fetchAll(PDO::FETCH_ASSOC);
-
-            $returned_data = array();
-
-            foreach ($data as $key => $value) {
-                $returned_data[$key]['Id'] = $value['Id'];
-                $returned_data[$key]['User_id'] = $value['User_id'];
-                $returned_data[$key]['User_name'] = $value['User_name'];
-                $returned_data[$key]['Birth_date'] = $value['Birth_date'];
-                $returned_data[$key]['Job_name'] = $value['Job_name'];
-                $returned_data[$key]['Coordinates'] = array('lat' => floatval($value['Latitude']), 'lng' => floatval($value['Longitude']));
+            if($command->rowCount() === 0)
+            {
+                $response_message->buildMessage(400, false, ['Id inserido não encontrado.'], null);
+                return $response_message;
             }
 
-            $response_message->buildMessage(200, true, null, $returned_data);
+            $user_data = $command->fetch(PDO::FETCH_ASSOC);
+
+            // Second query will fetch user social medias
+            $command = $connection->prepare(HelperUser::selectUserSocialMediaById());
+            $command->bindParam(':connectionId', $user_id);
+            $command->execute();
+
+            $user_social_media = $command->fetchAll(PDO::FETCH_ASSOC);
+
+            $user_data['User_social_media'] = $user_social_media;
+
+            $response_message->buildMessage(200, true, null, $user_data);
             return $response_message;
         }
         catch(PDOException $ex)
@@ -53,7 +60,7 @@ class UserImpl implements UserDao
         }
     }
 
-    public function updateUser(object $request_body, int $user_id) : ResponseMessage
+    public function updateUser(object $request_body, string $accessToken) : ResponseMessage
     {
         try
         {
@@ -65,10 +72,11 @@ class UserImpl implements UserDao
                 return $response_message;
             }
 
+            $user_id = Helper::getJWTData($accessToken);
+
             // Test if the actual user its the user using JWT
             $connection = Connection::openConnection();
             $connection->beginTransaction();
-            
 
             // Then validate info`s body
             if(!isset($json_data->name))
@@ -149,7 +157,7 @@ class UserImpl implements UserDao
             $command->bindParam(':biography', $biography);
 
             $command->bindParam(':jobId', $json_data->jobId);
-            $command->bindParam(':userId', $user_id); 
+            $command->bindParam(':userId', $user_id->id); 
             $command->execute();
 
             $connection->commit();
@@ -171,352 +179,7 @@ class UserImpl implements UserDao
         }
     }
 
-    public function getUser(int $user_id) : ResponseMessage
-    {
-        try
-        {
-            $response_message = new ResponseMessage();
-
-            $connection = Connection::openConnection();
-
-            // First query will fetch user datas 
-            $command = $connection->prepare(HelperUser::selectUser());
-            $command->bindParam(':userId', $user_id);
-            $command->execute();
-
-            if($command->rowCount() === 0)
-            {
-                $response_message->buildMessage(400, false, ['Id inserido não encontrado.'], null);
-                return $response_message;
-            }
-
-            $user_data = $command->fetch(PDO::FETCH_ASSOC);
-
-            // Second query will fetch user social medias
-            $command = $connection->prepare(HelperUser::selectUserSocialMediaById());
-            $command->bindParam(':connectionId', $user_id);
-            $command->execute();
-
-            $user_social_media = $command->fetchAll(PDO::FETCH_ASSOC);
-
-            $user_data['User_social_media'] = $user_social_media;
-
-            $response_message->buildMessage(200, true, null, $user_data);
-            return $response_message;
-        }
-        catch(PDOException $ex)
-        {
-            throw $ex;
-        }
-        catch(Exception $ex)
-        {
-            throw $ex;
-        }
-        finally
-        {
-            $connection = Connection::closeConnection();
-        }
-    }
-
-    public function addUserConnection(object $request_body, int $user_id) : ResponseMessage
-    {
-        try
-        {
-            $response_message = new ResponseMessage();
-
-            if(!$json_data = json_decode(strval($request_body)))
-            {
-                $response_message->buildMessage(400, false, ['Corpo da requisição não é um JSON válido.'], null);
-                return $response_message;
-            }
-
-            if(!isset($json_data->connectionId))
-            {
-                $response_message->buildMessage(400, false, ['O campo de id do usuário a ser adicionado deve ser preenchido.'], null);
-                return $response_message;
-            }
-            else if(empty($json_data->connectionId))
-            {
-                $response_message->buildMessage(400, false, ['Id do usuário a ser adicionado não poder ser vazio.'], null);
-                return $response_message;
-            }
-            else if(!is_numeric($json_data->connectionId))
-            {   
-                $response_message->buildMessage(400, false, ['Id do usuário a ser adicionado deve ser numérico.'], null);
-                return $response_message;
-            }
-        
-            $connection = Connection::openConnection();
-            $connection->beginTransaction();
-
-            $command = $connection->prepare(HelperUser::insertUserConnection());
-            $command->bindParam(':masterId', $user_id);
-            $command->bindParam(':userId', $json_data->connectionId);
-            $command->execute();
-
-            $connection->commit();
-
-            $response_message->buildMessage(200, true, ['Conexão realizada com sucesso.'], null);
-            return $response_message;
-        }
-        catch(PDOException $ex)
-        {
-            throw $ex;
-        }
-        catch(Exception $ex)
-        {
-            throw $ex;
-        }
-        finally
-        {
-            $connection = Connection::closeConnection();
-        }
-    }
-
-    public function getAllUserConnections(int $user_id, array $query_params): ResponseMessage
-    {
-        try
-        {
-            $response_message = new ResponseMessage();
-
-            $connection = Connection::openConnection();
-
-            $sql_params = HelperUser::createSqlUserParams($query_params);
-
-            $command = $connection->prepare(HelperUser::selectAllUserConnections() . $sql_params);
-            $command->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-            $command->execute();
-
-            if($command->rowCount() === 0)
-            {
-                $response_message->buildMessage(400, false, ['Nenhum registro foi encontrado.'], null);
-                return $response_message;
-            }
-
-            $data = $command->fetchAll(PDO::FETCH_ASSOC);
-
-            $response_message->buildMessage(200, true, null, $data);
-            return $response_message;
-        }
-        catch(PDOException $ex)
-        {
-            throw $ex;
-        }
-        catch(Exception $ex)
-        {
-            throw $ex;
-        }
-        finally
-        {
-            $connection = Connection::closeConnection();
-        }
-    }
-
-    public function getUserConnectionById(int $user_id, int $connection_id): ResponseMessage
-    {
-        try
-        {
-            $response_message = new ResponseMessage();
-
-            $connection = Connection::openConnection();
-
-            // First query needs to be testing if the connection id exists
-
-            // Second query needs to be testing if the connection id belongs to the user id
-            
-            // Third query needs to get the user infos
-
-            // Fourth query needs to get the user social media infos
-
-            //$command = $connection->prepare();
-
-            $response_message->buildMessage(200, true, null, null);
-            return $response_message;
-        }
-        catch(PDOException $ex)
-        {
-            throw $ex;
-        }
-        catch(Exception $ex)
-        {
-            throw $ex;
-        }
-        finally
-        {
-            $connection = Connection::closeConnection();
-        }
-    }
-
-    public function addUserCoordinate(int $user_id, object $request_body): ResponseMessage
-    {
-        try
-        {
-            $response_message = new ResponseMessage();
-
-            if(!$json_data = json_decode(strval($request_body)))
-            {
-                $response_message->buildMessage(400, false, ['Corpo da requisição não é um JSON válido.'], null);
-                return $response_message;
-            }
-
-            if(!isset($json_data->latitude))
-            {
-                $response_message->buildMessage(400, false, ['Latitude não pode ser vazia.'], null);
-                return $response_message;
-            }
-
-            if(!isset($json_data->longitude))
-            {
-                $response_message->buildMessage(400, false, ['Longitude não pode ser vazia.'], null);
-                return $response_message;
-            }
-
-            $connection = Connection::openConnection();
-            $connection->beginTransaction();
-
-            $command = $connection->prepare(HelperUser::insertUserCoordinate());
-            $command->bindParam(':user_id', $user_id);
-            $command->bindParam(':latitude', $json_data->latitude);
-            $command->bindParam(':longitude', $json_data->longitude);
-            $command->execute();
-
-            $connection->commit();
-
-            $response_message->buildMessage(200, true, ['Suas coordenadas foram adicionadas.'], null);
-            return $response_message;
-        }
-        catch(PDOException $ex)
-        {
-            throw $ex;
-        }
-        catch(Exception $ex)
-        {
-            throw $ex;
-        }
-        finally
-        {
-            $connection = Connection::closeConnection();
-        }
-    }
-
-    public function deleteUserCoordinate(int $user_id): ResponseMessage
-    {
-        try
-        {
-            $response_message = new ResponseMessage();
-
-            $connection = Connection::openConnection();
-            $connection->beginTransaction();
-
-            $command = $connection->prepare(HelperUser::deleteUserCoordinate());
-            $command->bindParam(':userId', $user_id, PDO::PARAM_INT);
-            $command->execute();
-
-            $connection->commit();
-
-            $response_message->buildMessage(200, true, ['Coordenadas do usuário foram exclídas.'], null);
-            return $response_message;
-        }
-        catch(PDOException $ex)
-        {
-            throw $ex;
-        }
-        catch(Exception $ex)
-        {
-            throw $ex;
-        }
-        finally
-        {
-            $connection = Connection::closeConnection();
-        }
-    }
-
-    public function updateUserCoordinate(int $user_id, object $request_body): ResponseMessage
-    {
-        try
-        {       
-            $response_message = new ResponseMessage();
-
-            if(!$json_data = json_decode(strval($request_body)))
-            {
-                $response_message->buildMessage(400, false, ['Corpo da requisição não é um JSON válido.'], null);
-                return $response_message;
-            }
-
-            if(!isset($json_data->latitude))
-            {
-                $response_message->buildMessage(400, false, ['Latitude não pode ser vazia.'], null);
-                return $response_message;
-            }
-
-            if(!isset($json_data->longitude))
-            {
-                $response_message->buildMessage(400, false, ['Longitude não pode ser vazia.'], null);
-                return $response_message;
-            }
-
-            $connection = Connection::openConnection();
-            $connection->beginTransaction();
-            
-            $command = $connection->prepare(HelperUser::updateUserCoordinate());
-            $command->bindParam(':latitude', $json_data->latitude);
-            $command->bindParam(':longitude', $json_data->longitude);
-            $command->bindParam(':userId', $user_id, PDO::PARAM_INT);
-            $command->execute();
-
-            $connection->commit();
-
-            $response_message->buildMessage(200, true, ['Coordenadas foram alteradas.'], null);
-            return $response_message;
-        }
-        catch(PDOException $ex)
-        {
-            throw $ex;
-        }
-        catch(Exception $ex)
-        {
-            throw $ex;
-        }
-        finally
-        {
-            $connection = Connection::closeConnection();
-        }
-    }
-
-    public function deleteUserConnection(int $user_id, int $connection_id): ResponseMessage
-    {
-        try
-        {
-            $response_message = new ResponseMessage();
-
-            $connection = Connection::openConnection();
-            $connection->beginTransaction();
-
-            $command = $connection->prepare(HelperUser::deleteUserConnection());
-            $command->bindParam(':userId', $user_id, PDO::PARAM_INT);
-            $command->bindParam(':connectionId', $connection_id, PDO::PARAM_INT);
-            $command->execute();
-
-            $connection->commit();
-
-            $response_message->buildMessage(200, true, ['Conexão rompida com sucesso.'], null);
-            return $response_message;
-        }
-        catch(PDOException $ex)
-        {
-            throw $ex;
-        }
-        catch(Exception $ex)
-        {
-            throw $ex;
-        }
-        finally
-        {
-            $connection = Connection::closeConnection();
-        }
-    }
-
-    public function setUserVisible(int $user_id, object $request_body): ResponseMessage
+    public function setUserVisible(object $request_body, string $accessToken): ResponseMessage
     {
         try
         {
@@ -540,7 +203,7 @@ class UserImpl implements UserDao
         {
             $connection = Connection::closeConnection();
         }
-    }
+    }    
 }
 
 ?>

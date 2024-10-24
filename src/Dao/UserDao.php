@@ -6,16 +6,9 @@ use Netcard\Model\ResponseMessage;
 
 interface UserDao
 {
-    public function getAllCoordinates() : ResponseMessage;
-    public function updateUser(object $request_body, int $user_id) : ResponseMessage;
+    // USER
     public function getUser(int $user_id) : ResponseMessage;
-    public function addUserConnection(object $request_body, int $user_id) : ResponseMessage;
-    public function getAllUserConnections(int $user_id, array $query_params) : ResponseMessage;
-    public function getUserConnectionById(int $user_id, int $connection_id) : ResponseMessage;
-    public function addUserCoordinate(int $user_id, object $request_body) : ResponseMessage;    
-    public function deleteUserCoordinate(int $user_id) : ResponseMessage;
-    public function updateUserCoordinate(int $user_id, object $request_body) : ResponseMessage;
-    public function deleteUserConnection(int $user_id, int $connection_id) : ResponseMessage;
-    public function setUserVisible(int $user_id, object $request_body) : ResponseMessage;
+    public function updateUser(object $request_body, string $accessToken) : ResponseMessage;
+    public function setUserVisible(object $request_body, string $accessToken) : ResponseMessage;    
 }
 ?>
