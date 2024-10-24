@@ -199,7 +199,7 @@ class UserImpl implements UserDao
             }
 
             $command = $connection->prepare(HelperUser::updateShowUser());
-            $command->bindParam(':visible', $json_data->visible);
+            $command->bindParam(':visible', $json_data->visible, PDO::PARAM_INT);
             $command->bindParam(':id', $user_id->id, PDO::PARAM_INT);
             $command->execute();
 

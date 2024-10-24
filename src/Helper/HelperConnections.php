@@ -68,7 +68,15 @@ class HelperConnections
                 FROM tb_users_connections AS UC
                 INNER JOIN tb_users AS U ON UC.Connection_id = U.Id
                 INNER JOIN tb_jobs AS J ON U.Job_id = J.Id
-                WHERE UC.Connection_id = :connectionId AND UC.Master_id = :masterId";
+                WHERE UC.Connection_id = :connectionId AND UC.Master_id = :id";
+    }
+
+    public static function selectUserSocialMediaById() : string
+    {
+        return "SELECT USM.Id, USM.Social_media_id, SM.Name, USM.Url 
+                FROM tb_user_social_media AS USM
+                INNER JOIN tb_social_media AS SM ON USM.Social_media_id = SM.Id
+                WHERE USM.User_id = :connectionId";
     }
 }
 

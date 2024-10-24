@@ -99,7 +99,7 @@ class HelperUser
 
     public static function selectShowUser() : string
     {
-        return "SELECT Show_user FROM tb_login WHER User_id = :id;";
+        return "SELECT Show_user FROM tb_login WHERE User_id = :id;";
     }
 }
 

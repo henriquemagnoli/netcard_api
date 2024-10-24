@@ -116,19 +116,32 @@ class ConnectionsImpl implements ConnectionsDao
         {
             $response_message = new ResponseMessage();
 
+            $user_id = Helper::getJWTData($accessToken);
+
             $connection = Connection::openConnection();
-
-            // First query needs to be testing if the connection id exists
-
-            // Second query needs to be testing if the connection id belongs to the user id
             
-            // Third query needs to get the user infos
+            $command = $connection->prepare(HelperConnections::selectUserConnectionById());
+            $command->bindParam(':connectionId', $connection_id, PDO::PARAM_INT);
+            $command->bindParam(':id', $user_id->id, PDO::PARAM_INT);
+            $command->execute();
 
-            // Fourth query needs to get the user social media infos
+            if($command->rowCount() === 0)
+            {
+                $response_message->buildMessage(400, false, ['Nenhum registro foi encontrado.'], null);
+                return $response_message;
+            }
 
-            //$command = $connection->prepare();
+            $user_data = $command->fetch(PDO::FETCH_ASSOC);
 
-            $response_message->buildMessage(200, true, null, null);
+            $command = $connection->prepare(HelperConnections::selectUserSocialMediaById());
+            $command->bindParam(':connectionId', $connection_id, PDO::PARAM_INT);
+            $command->execute();
+
+            $user_social_media = $command->fetchAll(PDO::FETCH_ASSOC);
+
+            $user_data['User_social_media'] = $user_social_media;
+
+            $response_message->buildMessage(200, true, null, $user_data);
             return $response_message;
         }
         catch(PDOException $ex)
