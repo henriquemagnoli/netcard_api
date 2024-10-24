@@ -64,6 +64,33 @@ class UserController
             return $response;
         }
     }   
+
+    public function updateUserVisible(Request $request, Response $response) : Response
+    {
+        try
+        {
+            $update_user_visible = new UserImpl();
+
+            $response_message = $update_user_visible->updateUserVisible($request->getBody(), $request->getHeader("HTTP_AUTHORIZATION")[0]);
+            
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+        catch(PDOException $ex)
+        {
+            $response_message = new ResponseMessage();
+            $response_message->buildMessage(500, false, ['Ocorreu um erro na conexão com o servidor.' . $ex->getMessage()], null);
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+        catch(Exception $ex)
+        {
+            $response_message = new ResponseMessage();
+            $response_message->buildMessage(500, false, ['Ocorreu um erro ao se cadastrar: ' . $ex->getMessage()], null);
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+    }
 }
 
 ?>

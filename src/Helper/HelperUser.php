@@ -84,14 +84,22 @@ class HelperUser
         return "INSERT INTO tb_login (User_id) VALUES (:user_id);";
     }
 
-
-
     public static function selectUserSocialMediaById() : string
     {
         return "SELECT USM.Id, USM.Social_media_id, SM.Name, USM.Url 
                 FROM tb_user_social_media AS USM
                 INNER JOIN tb_social_media AS SM ON USM.Social_media_id = SM.Id
                 WHERE USM.User_id = :connectionId";
+    }
+
+    public static function updateShowUser() : string
+    {
+        return "UPDATE tb_login SET Show_user = :visible WHERE User_id = :id";
+    }
+
+    public static function selectShowUser() : string
+    {
+        return "SELECT Show_user FROM tb_login WHER User_id = :id;";
     }
 }
 

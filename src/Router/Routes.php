@@ -15,7 +15,7 @@ return function(App $app)
     $app->group('/api/user', function() use ($app) {
         $app->get('/api/user/{id}', UserController::class . ':getUser'); // Get User by Id
         $app->patch('/api/user', UserController::class . ':updateUser'); // Update User
-        $app->post('/api/user/visible', UserController::class . ':setUserVisible'); // Set user visible
+        $app->patch('/api/user/visible', UserController::class . ':updateUserVisible'); // Set user visible
     });
 
     $app->group('/api/coordinates', function() use ($app) {

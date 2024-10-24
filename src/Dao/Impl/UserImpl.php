@@ -179,16 +179,39 @@ class UserImpl implements UserDao
         }
     }
 
-    public function setUserVisible(object $request_body, string $accessToken): ResponseMessage
+    public function updateUserVisible(object $request_body, string $accessToken): ResponseMessage
     {
         try
         {
             $response_message = new ResponseMessage();
 
-            $json_data =  json_decode(strval($request_body));
+            $json_data = json_decode(strval($request_body));
 
+            $user_id = Helper::getJWTData($accessToken);
+
+            $connection = Connection::openConnection();
+            $connection->beginTransaction();
+
+            if(!isset($json_data->visible))
+            {
+                $response_message->buildMessage(400, false, ['Vísivel deve ser preenchido.'], null);
+                return $response_message;
+            }
+
+            $command = $connection->prepare(HelperUser::updateShowUser());
+            $command->bindParam(':visible', $json_data->visible);
+            $command->bindParam(':id', $user_id->id, PDO::PARAM_INT);
+            $command->execute();
+
+            $command = $connection->prepare(HelperUser::selectShowUser());
+            $command->bindParam(':id', $user_id->id, PDO::PARAM_INT);
+            $command->execute();
+
+            $data = $command->fetch(PDO::FETCH_ASSOC);
             
-
+            $connection->commit();
+            
+            $response_message->buildMessage(200, true, ['Visibilidade foi alterada.'], $data);
             return $response_message;
         }
         catch(PDOException $ex)
