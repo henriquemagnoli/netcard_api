@@ -127,7 +127,7 @@ class ConnectionsImpl implements ConnectionsDao
 
             if($command->rowCount() === 0)
             {
-                $response_message->buildMessage(400, false, ['Nenhum registro foi encontrado.'], null);
+                $response_message->buildMessage(404, false, ['Nenhum registro foi encontrado.'], null);
                 return $response_message;
             }
 

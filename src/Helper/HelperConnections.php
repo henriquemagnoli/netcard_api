@@ -54,8 +54,9 @@ class HelperConnections
     public static function selectUserConnectionById() : string
     {
         return "SELECT U.Id, 
-                       U.Name, 
+                       U.Name AS UserName, 
                        U.Email, 
+                       U.Birth_date,
                        U.Profile_picture, 
                        U.Sex, 
                        U.Street, 
@@ -64,7 +65,7 @@ class HelperConnections
                        U.Street_complement, 
                        U.District, 
                        U.Biography,
-                       J.Name
+                       J.Name AS JobName
                 FROM tb_users_connections AS UC
                 INNER JOIN tb_users AS U ON UC.Connection_id = U.Id
                 INNER JOIN tb_jobs AS J ON U.Job_id = J.Id
