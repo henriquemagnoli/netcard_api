@@ -9,6 +9,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Dotenv\Dotenv;
+use Netcard\Model\ResponseMessage;
 
 require __DIR__ . '../../vendor/autoload.php';
 
@@ -42,6 +43,28 @@ $app->add(function(Request $request, RequestHandler $handler){
                     ->withHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type, Accept')
                     ->withHeader('Content-type', 'application/json;charset=utf-8')
                     ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+});
+
+// Add middleware to verify if JSON body is correct
+$app->add(function(Request $request, RequestHandler $handler) use ($app) {
+
+    $responseMessage = new ResponseMessage();
+
+    if($request->getMethod() == "POST" || $request->getMethod() == "PATCH")
+    {
+        if(!json_decode(strval($request->getBody())))
+        {
+            $errorMessage['error'] = array("code" => 2, "description" => "Corpo da requisição não é um JSON válido.");
+            $responseMessage->buildMessage(400, false, $errorMessage, null);
+            
+            $response = $app->getResponseFactory()->createResponse();
+            $response->getBody()->write(json_encode($responseMessage->send(), JSON_UNESCAPED_UNICODE));
+            return $response;
+        }
+    }
+
+    $response = $handler->handle($request);
+    return $response;
 });
 
 $routes = require __DIR__ . '../../src/Router/Routes.php';

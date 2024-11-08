@@ -4,7 +4,8 @@ namespace NetCard\Helper;
 
 class HelperUser
 {
-    // SQL Functions
+
+    /* ===== USER ===== */
     public static function insertUser() : string
     {
         return "INSERT INTO tb_users (Name, 
@@ -84,14 +85,36 @@ class HelperUser
         return "INSERT INTO tb_login (User_id) VALUES (:user_id);";
     }
 
-    public static function selectUserSocialMediaById() : string
+    /* ===== USER SOCIAL MEDIA ===== */
+    public static function selectSocialMediaByUserId() : string
     {
         return "SELECT USM.Id, USM.Social_media_id, SM.Name, USM.Url 
                 FROM tb_user_social_media AS USM
                 INNER JOIN tb_social_media AS SM ON USM.Social_media_id = SM.Id
-                WHERE USM.User_id = :connectionId";
+                WHERE USM.User_id = :userId";
     }
 
+    public static function insertUserSocialMedia() : string
+    {
+        return "INSERT INTO tb_user_social_media (User_id, Social_media_id, Url) VALUES (:userId, :socialMediaId, :url);";
+    }
+
+    public static function selectUserSocialMediaById() : string
+    {
+        return "SELECT Id, User_id, Social_media_id, Url FROM tb_user_social_media WHERE Id = :id AND User_id = :userId;";
+    }
+
+    public static function updateUserSocialMedia() : string
+    {
+        return "UPDATE tb_user_social_media SET Url = :url WHERE Id = :id AND User_id = :userId;";
+    }
+
+    public static function deleteUserSocialMedia() : string
+    {
+        return "DELETE FROM tb_user_social_media WHERE Id = :id AND User_id = :userId;";
+    }
+
+    /* ===== USER VISIBLE ===== */
     public static function updateShowUser() : string
     {
         return "UPDATE tb_login SET Show_user = :visible WHERE User_id = :id";

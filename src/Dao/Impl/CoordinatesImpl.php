@@ -32,6 +32,7 @@ class CoordinatesImpl implements CoordinatesDao
                 $returned_data[$key]['Id'] = $value['Id'];
                 $returned_data[$key]['User_id'] = $value['User_id'];
                 $returned_data[$key]['User_name'] = $value['User_name'];
+                $returned_data[$key]['Profile_picture'] = $value['Profile_picture'];
                 $returned_data[$key]['Birth_date'] = $value['Birth_date'];
                 $returned_data[$key]['Job_name'] = $value['Job_name'];
                 $returned_data[$key]['Coordinates'] = array('lat' => floatval($value['Latitude']), 'lng' => floatval($value['Longitude']));
@@ -96,10 +97,12 @@ class CoordinatesImpl implements CoordinatesDao
         }
         catch(PDOException $ex)
         {
+            $connection->rollBack();
             throw $ex;
         }
         catch(Exception $ex)
         {
+            $connection->rollBack();
             throw $ex;
         }
         finally
@@ -130,10 +133,12 @@ class CoordinatesImpl implements CoordinatesDao
         }
         catch(PDOException $ex)
         {
+            $connection->rollBack();
             throw $ex;
         }
         catch(Exception $ex)
         {
+            $connection->rollBack();
             throw $ex;
         }
         finally
@@ -184,10 +189,12 @@ class CoordinatesImpl implements CoordinatesDao
         }
         catch(PDOException $ex)
         {
+            $connection->rollBack();
             throw $ex;
         }
         catch(Exception $ex)
         {
+            $connection->rollBack();
             throw $ex;
         }
         finally

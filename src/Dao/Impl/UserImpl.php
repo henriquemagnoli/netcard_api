@@ -35,8 +35,8 @@ class UserImpl implements UserDao
             $user_data = $command->fetch(PDO::FETCH_ASSOC);
 
             // Second query will fetch user social medias
-            $command = $connection->prepare(HelperUser::selectUserSocialMediaById());
-            $command->bindParam(':connectionId', $user_id);
+            $command = $connection->prepare(HelperUser::selectSocialMediaByUserId());
+            $command->bindParam(':userId', $user_id);
             $command->execute();
 
             $user_social_media = $command->fetchAll(PDO::FETCH_ASSOC);
@@ -66,17 +66,9 @@ class UserImpl implements UserDao
         {
             $response_message = new ResponseMessage();
 
-            if(!$json_data = json_decode(strval($request_body)))
-            {
-                $response_message->buildMessage(400, false, ['Corpo da requisição não é um JSON válido.'], null);
-                return $response_message;
-            }
+            $json_data = json_decode(strval($request_body));
 
             $user_id = Helper::getJWTData($accessToken);
-
-            // Test if the actual user its the user using JWT
-            $connection = Connection::openConnection();
-            $connection->beginTransaction();
 
             // Then validate info`s body
             if(!isset($json_data->name))
@@ -135,6 +127,10 @@ class UserImpl implements UserDao
                 return $response_message;
             }
 
+            // Test if the actual user its the user using JWT
+            $connection = Connection::openConnection();
+            $connection->beginTransaction();
+
             // Update User
             $command = $connection->prepare(HelperUser::updateUser());
             $command->bindParam(':name', $json_data->name);
@@ -167,10 +163,12 @@ class UserImpl implements UserDao
         }
         catch(PDOException $ex)
         {
+            $connection->rollBack();
             throw $ex;
         }
         catch(Exception $ex)
         {
+            $connection->rollBack();
             throw $ex;
         }
         finally
@@ -216,10 +214,12 @@ class UserImpl implements UserDao
         }
         catch(PDOException $ex)
         {
+            $connection->rollBack();
             throw $ex;
         }
         catch(Exception $ex)
         {
+            $connection->rollBack();
             throw $ex;
         }
         finally
@@ -227,6 +227,165 @@ class UserImpl implements UserDao
             $connection = Connection::closeConnection();
         }
     }    
+
+    public function setUserSocialMedia(object $request_body, string $accessToken): ResponseMessage
+    {
+        try
+        {
+            $response_message = new ResponseMessage();
+
+            $json_data = json_decode(strval($request_body));
+
+            $user_id = Helper::getJWTData($accessToken);
+
+            // Validade infos in JSON body
+            if(!isset($json_data->socialMediaId))
+            {
+                $response_message->buildMessage(400, false, ['Rede Social deve ser preenchida.'], null);
+                return $response_message;
+            }
+
+            if(!isset($json_data->url))
+            {
+                $response_message->buildMessage(400, false, ['Url da rede social deve ser preenchida.'], null);
+                return $response_message;
+            }
+
+            $connection = Connection::openConnection();
+            $connection->beginTransaction();
+
+            $command = $connection->prepare(HelperUser::insertUserSocialMedia());
+            $command->bindParam(':userId', $user_id->id, PDO::PARAM_INT);
+            $command->bindParam(':socialMediaId', $json_data->socialMediaId, PDO::PARAM_INT);
+            $command->bindParam(':url', $json_data->url, PDO::PARAM_STR);
+            $command->execute();
+
+            $connection->commit();
+            
+            $response_message->buildMessage(200, true, ['Rede social foi incluída com sucesso.'], null);
+            return $response_message;
+        }
+        catch(PDOException $ex)
+        {
+            //$connection->rollBack();
+            throw $ex;
+        }
+        catch(Exception $ex)
+        {
+            //$connection->rollBack();
+            throw $ex;
+        }
+        finally
+        {
+            $connection = Connection::closeConnection();
+        }
+    }
+
+    public function updateUserSocialMedia(int $userSocialMediaId, object $request_body, string $accessToken): ResponseMessage
+    {
+        try
+        {
+            $response_message = new ResponseMessage();
+
+            $json_data = json_decode(strval($request_body));
+
+            $user_id = Helper::getJWTData($accessToken);
+
+            // Validate infos in JSON body
+            if(!isset($json_data->url))
+            {
+                $response_message->buildMessage(400, false, ['Url da rede social deve ser preenchida.'], null);
+                return $response_message;
+            }
+
+            $connection = Connection::openConnection();
+            $connection->beginTransaction();
+
+            $command = $connection->prepare(HelperUser::selectUserSocialMediaById());
+            $command->bindParam(':id', $userSocialMediaId, PDO::PARAM_INT);
+            $command->bindParam(':userId', $user_id->id, PDO::PARAM_INT);
+            $command->execute();
+
+            if($command->rowCount() === 0)
+            {
+                $response_message->buildMessage(404, false, ['Nenhum registro foi encontrado.'], null);
+                return $response_message;
+            }
+
+            $command = $connection->prepare(HelperUser::updateUserSocialMedia());
+            $command->bindParam(':url', $json_data->url, PDO::PARAM_STR);
+            $command->bindParam(':id', $userSocialMediaId, PDO::PARAM_INT);
+            $command->bindParam(':userId', $user_id, PDO::PARAM_INT);
+            $command->execute();
+
+            $connection->commit();
+
+            $response_message->buildMessage(200, true, ['Rede social foi alterada com sucesso.'], null);
+            return $response_message;
+        }
+        catch(PDOException $ex)
+        {
+            $connection->rollBack();
+            throw $ex;
+        }
+        catch(Exception $ex)
+        {
+            $connection->rollBack();
+            throw $ex;
+        }
+        finally
+        {
+            $connection = Connection::closeConnection();
+        }
+    }
+
+    public function deleteUserSocialMedia(int $userSocialMediaId, string $accessToken): ResponseMessage
+    {
+        try
+        {
+            $response_message = new ResponseMessage();
+            
+            $user_id = Helper::getJWTData($accessToken);
+
+            $connection = Connection::openConnection();
+            $connection->beginTransaction();
+
+            $command = $connection->prepare(HelperUser::selectUserSocialMediaById());
+            $command->bindParam(':id', $userSocialMediaId, PDO::PARAM_INT);
+            $command->bindParam(':userId', $user_id, PDO::PARAM_INT);
+            $command->execute();
+
+            if($command->rowCount() === 0)
+            {
+                $response_message->buildMessage(404, false, ['Nenhum registro foi encontrado.'], null);
+                return $response_message;
+            }
+
+            $command = $connection->prepare(HelperUser::deleteUserSocialMedia());
+            $command->bindParam(':id', $userSocialMediaId, PDO::PARAM_INT);
+            $command->bindParam(':userId', $user_id->id, PDO::PARAM_INT);
+            $command->execute();
+
+            $connection->commit();
+
+            $response_message->buildMessage(200, true, ['Rede social foi excluída com sucesso.'], null);
+            return $response_message;
+        }
+        catch(PDOException $ex)
+        {   
+            $connection->rollBack();
+            throw $ex;
+        }
+        catch(Exception $ex)
+        {
+            $connection->rollBack();
+            throw $ex;
+        }
+        finally
+        {
+            $connection = Connection::closeConnection();
+        }
+    }
 }
 
 ?>

@@ -98,10 +98,12 @@ class ConnectionsImpl implements ConnectionsDao
         }
         catch(PDOException $ex)
         {
+            $connection->rollBack();
             throw $ex;
         }
         catch(Exception $ex)
         {
+            $connection->rollBack();
             throw $ex;
         }
         finally
@@ -181,10 +183,12 @@ class ConnectionsImpl implements ConnectionsDao
         }
         catch(PDOException $ex)
         {
+            $connection->rollBack();
             throw $ex;
         }
         catch(Exception $ex)
         {
+            $connection->rollBack();
             throw $ex;
         }
         finally

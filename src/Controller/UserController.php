@@ -86,7 +86,88 @@ class UserController
         catch(Exception $ex)
         {
             $response_message = new ResponseMessage();
-            $response_message->buildMessage(500, false, ['Ocorreu um erro ao se cadastrar: ' . $ex->getMessage()], null);
+            $response_message->buildMessage(500, false, ['Ocorreu um erro ao alterar a visibilidade: ' . $ex->getMessage()], null);
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+    }
+
+    public function setUserSocialMedia(Request $request, Response $response) : Response
+    {
+        try
+        {
+            $setUserSocialMedia = new UserImpl();
+
+            $response_message = $setUserSocialMedia->setUserSocialMedia($request->getBody(), $request->getHeader("HTTP_AUTHORIZATION")[0]);
+            
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response; 
+        }
+        catch(PDOException $ex)
+        {
+            $response_message = new ResponseMessage();
+            $response_message->buildMessage(500, false, ['Ocorreu um erro na conexão com o servidor.' . $ex->getMessage()], null);
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+        catch(Exception $ex)
+        {
+            $response_message = new ResponseMessage();
+            $response_message->buildMessage(500, false, ['Ocorreu um erro ao incluir a rede social: ' . $ex->getMessage()], null);
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+    }
+
+    public function updateUserSocialMedia(Request $request, Response $response, array $args) : Response
+    {
+        try
+        {
+            $updateUserSocialMedia = new UserImpl();
+
+            $response_message = $updateUserSocialMedia->updateUserSocialMedia($args['id'], $request->getBody(), $request->getHeader("HTTP_AUTHORIZATION")[0]);
+            
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response; 
+        }
+        catch(PDOException $ex)
+        {
+            $response_message = new ResponseMessage();
+            $response_message->buildMessage(500, false, ['Ocorreu um erro na conexão com o servidor.' . $ex->getMessage()], null);
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+        catch(Exception $ex)
+        {
+            $response_message = new ResponseMessage();
+            $response_message->buildMessage(500, false, ['Ocorreu um erro ao alterar as redes sociais: ' . $ex->getMessage()], null);
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+    }
+
+    public function deleteUserSocialMedia(Request $request, Response $response, array $args) : Response
+    {
+        try
+        {
+            $deleteUserSocialMedia = new UserImpl();
+
+            $response_message = $deleteUserSocialMedia->deleteUserSocialMedia($args['id'], $request->getHeader("HTTP_AUTHORIZATION")[0]);
+            
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response; 
+        }
+        catch(PDOException $ex)
+        {
+            $response_message = new ResponseMessage();
+            $response_message->buildMessage(500, false, ['Ocorreu um erro na conexão com o servidor.' . $ex->getMessage()], null);
+            $response->getBody()->write(json_encode($response_message->send()));
+            return $response;
+        }
+        catch(Exception $ex)
+        {
+            $response_message = new ResponseMessage();
+            $response_message->buildMessage(500, false, ['Ocorreu um erro ao exluir a rede social: ' . $ex->getMessage()], null);
             $response->getBody()->write(json_encode($response_message->send()));
             return $response;
         }
