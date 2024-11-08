@@ -43,7 +43,7 @@ class HelperConnections
 
     public static function insertUserConnection() : string
     {
-        return "INSERT INTO tb_users_connections (Master_id, User_id) VALUES (:masterId, :userId);";
+        return "INSERT INTO tb_users_connections (Master_id, Connection_id) VALUES (:masterId, :userId);";
     }
 
     public static function deleteUserConnection() : string
