@@ -315,7 +315,7 @@ class UserImpl implements UserDao
             $command = $connection->prepare(HelperUser::updateUserSocialMedia());
             $command->bindParam(':url', $json_data->url, PDO::PARAM_STR);
             $command->bindParam(':id', $userSocialMediaId, PDO::PARAM_INT);
-            $command->bindParam(':userId', $user_id, PDO::PARAM_INT);
+            $command->bindParam(':userId', $user_id->id, PDO::PARAM_INT);
             $command->execute();
 
             $connection->commit();
@@ -352,7 +352,7 @@ class UserImpl implements UserDao
 
             $command = $connection->prepare(HelperUser::selectUserSocialMediaById());
             $command->bindParam(':id', $userSocialMediaId, PDO::PARAM_INT);
-            $command->bindParam(':userId', $user_id, PDO::PARAM_INT);
+            $command->bindParam(':userId', $user_id->id, PDO::PARAM_INT);
             $command->execute();
 
             if($command->rowCount() === 0)
