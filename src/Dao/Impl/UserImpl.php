@@ -245,7 +245,7 @@ class UserImpl implements UserDao
                 return $response_message;
             }
 
-            if(!isset($json_data->url))
+            if(!isset($json_data->url) || empty($json_data->url))
             {
                 $response_message->buildMessage(400, false, ['Url da rede social deve ser preenchida.'], null);
                 return $response_message;
@@ -292,7 +292,7 @@ class UserImpl implements UserDao
             $user_id = Helper::getJWTData($accessToken);
 
             // Validate infos in JSON body
-            if(!isset($json_data->url))
+            if(!isset($json_data->url) || empty($json_data->url))
             {
                 $response_message->buildMessage(400, false, ['Url da rede social deve ser preenchida.'], null);
                 return $response_message;
