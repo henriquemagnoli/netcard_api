@@ -135,7 +135,7 @@ class UserImpl implements UserDao
             $command = $connection->prepare(HelperUser::updateUser());
             $command->bindParam(':name', $json_data->name);
 
-            $profile_picture = (isset($json_data->profilePicture) ? $json_data->profilePicture : null);
+            $profile_picture = (!isset($json_data->profilePicture) || empty($json_data->profilePicture) ? null : $json_data->profilePicture);
             $command->bindParam(':profilePicture', $profile_picture);
 
             $command->bindParam(':sex', $json_data->sex);
@@ -143,13 +143,13 @@ class UserImpl implements UserDao
             $command->bindParam(':streetNumber', $json_data->address->streetNumber);
             $command->bindParam(':cityId', $json_data->address->cityId);
 
-            $street_complement = (isset($json_data->streetComplement) ? $json_data->streetComplement : null);
+            $street_complement = (!isset($json_data->address->streetComplement) || empty($json_data->address->streetComplement) ? null : $json_data->address->streetComplement);
             $command->bindParam(':streetComplement', $street_complement);
 
             $command->bindParam(':district', $json_data->address->district);
             $command->bindParam(':zipCode', $json_data->address->zipCode);
 
-            $biography = (isset($json_data->biography) ? $json_data->biography : null);
+            $biography = (!isset($json_data->biography) || empty($json_data->biography) ? null : $json_data->biography);
             $command->bindParam(':biography', $biography);
 
             $command->bindParam(':jobId', $json_data->jobId);
@@ -267,12 +267,12 @@ class UserImpl implements UserDao
         }
         catch(PDOException $ex)
         {
-            //$connection->rollBack();
+            $connection->rollBack();
             throw $ex;
         }
         catch(Exception $ex)
         {
-            //$connection->rollBack();
+            $connection->rollBack();
             throw $ex;
         }
         finally

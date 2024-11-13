@@ -6,8 +6,8 @@ class HelperCoordinates
 {
     public static function selectUserCoordinates() : string
     {
-        return "SELECT UC.Id, UC.User_id, U.Name AS User_name, U.Birth_date, U.Profile_picture, J.Name AS Job_name, UC.Latitude, UC.Longitude FROM tb_users_coordinates AS UC, tb_users AS U, tb_jobs AS J
-                WHERE (UC.User_id = U.Id) AND (U.Job_id = J.Id); ";
+        return "SELECT UC.Id, UC.User_id, U.Name AS User_name, U.Birth_date, U.Profile_picture, J.Name AS Job_name, UC.Latitude, UC.Longitude FROM tb_users_coordinates AS UC, tb_users AS U, tb_jobs AS J, tb_login AS L
+                WHERE (UC.User_id = U.Id) AND (U.Job_id = J.Id) AND (L.User_id = UC.User_id) AND (L.Show_user = 1);";
     }
 
     public static function insertUserCoordinate() : string
