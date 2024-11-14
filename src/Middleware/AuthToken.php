@@ -63,15 +63,6 @@ class AuthToken implements MiddlewareInterface
             $response = $handler->handle($request);
             return $response;
         }
-        catch(Exception $ex)
-        {
-            $response_message = new ResponseMessage();
-
-            $response_message->buildMessage($ex->getCode(), false, ['Ocorreu um erro ao validar o JWT.'], null);
-            $response = $response_factory->createResponse();
-            $response->getBody()->write(json_encode($response_message->send()));
-            return $response;
-        }
         catch(InvalidArgumentException $ex)
         {
             $response_message = new ResponseMessage();
